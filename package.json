@@ -1,0 +1,14 @@
+{
+  "name": "gm-puppeteer-crawler",
+  "version": "1.0.0",
+  "description": "GM Research Crawler built on Puppeteer.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "gracebmanning",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^19.4.1"
+  }
+}
