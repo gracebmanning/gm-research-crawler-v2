@@ -1,5 +1,5 @@
 {
-  "name": "gm-puppeteer-crawler",
+  "name": "gm-research-crawler-v2",
   "version": "1.0.0",
   "description": "GM Research Crawler built on Puppeteer.",
   "main": "index.js",
