@@ -1,7 +1,21 @@
 import puppeteer from 'puppeteer';
+import { createClient } from 'redis';
+
+/**
+ * FUNCTION DEFINITIONS
+ */
 
 function delay(min: number, max: number){
     return new Promise(r => setTimeout(r, Math.floor(Math.random()*(max-min) + min)))
+}
+
+async function setData(key:string, value:any){    
+    await client.set(key, value);
+}
+
+async function loadData(key:string){
+    const value = await client.get(key);
+    console.log(value);
 }
 
 let main = async()=>{
@@ -19,6 +33,9 @@ let main = async()=>{
         })
         console.log(links);
 
+        //setData("numLinks", links.length);
+        //loadData("numLinks");
+
         const cookies = await page.cookies();
         console.log(JSON.stringify(cookies));
 
@@ -30,7 +47,15 @@ let main = async()=>{
 }
 
 let run = async()=>{
+    await client.connect();
     await main();
+    await client.disconnect();
 }
 
+
+/**
+ * EXECUTION BEGINS HERE
+ */
+const client = createClient({ url: "redis://127.0.0.1:6379" });
+client.on('error', (err:Error) => console.log('Redis Client Error', err));
 run();
