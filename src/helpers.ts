@@ -9,7 +9,15 @@ export function getAbbr(url:string):string{
         return "";
     }
 }
-export function getCategories(url:URL){
-    return url;
-}
 
+// returns array of links with same domain name as url
+export function validLinks(url:string, links:string[]):string[]{
+    var valid:string[] = [];
+    let domain = new URL(url).hostname;
+    for(let l in links){
+        if(new URL(l).hostname == domain){
+            valid.push(l);
+        }
+    }
+    return valid;
+}

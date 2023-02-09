@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer';
 import { Protocol } from 'puppeteer';
 import { createClient } from 'redis';
-import { getAbbr } from './helpers';
+import { getAbbr, validLinks } from './helpers';
 
 /**
  * FUNCTION DEFINITIONS
@@ -16,36 +16,41 @@ async function setData(url:string, key:string, value:any){
 }
 
 async function storeCookies(cookiesList:Protocol.Network.Cookie[], urlAsString:string){
-    const cookies:string[] = Array.from(cookiesList).map(c => JSON.stringify(c));
+    const cookies:Set<string> = new Set(Array.from(cookiesList).map(c => JSON.stringify(c)));
     
     let abbr:string = getAbbr(urlAsString);
     setData(urlAsString, 'cookies', abbr+'cookies'); // store set of cookies
     setData(urlAsString, 'numCookies', abbr+'numCookies'); // store numCookies
-    for(let i=0; i < cookies.length; i++){
-        await client.LPUSH(abbr+'cookies', cookies[i]);
+    for(let c of cookies){
+        var result:number = await client.SADD(abbr+'cookies', c);
+        console.log(result);
     }
-    await client.SET(abbr+'numCookies', cookies.length.toString());
+    await client.SET(abbr+'numCookies', cookies.size.toString());
 }
 
 async function main() {
     try {
         const browser = await puppeteer.launch({ headless: true });
         const page = await browser.newPage();
-        const urlAsString = 'https://bigbudpress.com/';
+        const url = 'https://bigbudpress.com/';
 
-        await page.goto(urlAsString, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
+        await page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
         await delay(1000, 2000); // emulates human behavior
-
-        let url = new URL(urlAsString);
 
         const links = await page.evaluate(() => {
             const anchors = document.getElementsByTagName('a');
             return Array.from(anchors).map(a => a.href);
         });
 
+        // add URL to visited
+        visited.add(url);
+
+        // add valid links to queue
+        queue.concat(validLinks(url, links));
+
         // cookies
         const cookies = await page.cookies();
-        storeCookies(cookies, urlAsString);
+        storeCookies(cookies, url);
 
         // certifications
         // count certifications
@@ -68,16 +73,9 @@ async function main() {
 }
 
 let run = async()=>{
-    // connect to Redis server
-    await client.connect();
-
-    // define seed URLs
-    let seeds = [];
-
+    await client.connect(); // connect to Redis server
     await main();
-
-    // disconnect from Redis server
-    await client.disconnect();
+    await client.disconnect(); // disconnect from Redis server
 }
 
 
@@ -86,4 +84,11 @@ let run = async()=>{
  */
 const client = createClient({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err:Error) => console.log('Redis Client Error', err));
+
+var seeds:Set<string> = new Set();     // var seeds = new Set(sites); ...use sites array from siteData.ts file              
+seeds.add('https://bigbudpress.com/'); // just one seed URL right now
+
+var queue:Array<string> = new Array(); // links to visit next
+var visited:Set<string> = new Set(); // unique visited links
+
 run();
