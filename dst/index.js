@@ -20,15 +20,9 @@ const redis_1 = require("redis");
 function delay(min, max) {
     return new Promise(r => setTimeout(r, Math.floor(Math.random() * (max - min) + min)));
 }
-function setData(key, value) {
+function setData(url, key, value) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield client.set(key, value);
-    });
-}
-function loadData(key) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const value = yield client.get(key);
-        console.log(value);
+        yield client.HSET(url, key, value);
     });
 }
 let main = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -43,14 +37,15 @@ let main = () => __awaiter(void 0, void 0, void 0, function* () {
             const anchors = document.getElementsByTagName('a');
             return Array.from(anchors).map(a => a.href);
         });
-        console.log(links);
-        //setData("numLinks", links.length);
-        //loadData("numLinks");
         // cookies
-        const cookies = yield page.cookies();
-        console.log(JSON.stringify(cookies));
-        // store set of cookies
-        // store numCookies
+        const cookies = Array.from(yield page.cookies()).map(c => JSON.stringify(c));
+        // TODO: error -- must store as a set (currently typed as Cookie[])
+        setData(urlAsString, 'cookies', 'BBPcookies'); // store set of cookies
+        setData(urlAsString, 'numCookies', 'BBPnumCookies'); // store numCookies
+        for (let i = 0; i < cookies.length; i++) {
+            yield client.LPUSH('BBPcookies', cookies[i]);
+        }
+        yield client.SET('BBPnumCookies', cookies.length.toString());
         // certifications
         // count certifications
         // store set of certs & numCerts

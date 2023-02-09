@@ -38,9 +38,9 @@ let rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-function loadData(key) {
+function loadData(url, field) {
     return __awaiter(this, void 0, void 0, function* () {
-        const value = yield client.get(key);
+        const value = yield client.HGET(url, field);
         console.log(value);
     });
 }
@@ -48,8 +48,7 @@ let exportAllData = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 // export data for one URL
 let exportURLData = (url) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(url);
-    return url;
+    console.log('cookies: ', loadData(url, 'cookies'));
 });
 const client = (0, redis_1.createClient)({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err) => console.log('Redis Client Error', err));
@@ -64,7 +63,7 @@ let question = `Which URL data would you like to export?\n
 7: https://www.sezane.com/us\n
 8: https://www.fashionbrandcompany.com/\n
 9: https://shoptunnelvision.com/\n
-10: https://igirlworld.com/\n`;
+10: https://igirlworld.com/\n\n`;
 rl.question(question, (answer) => {
     switch (answer.toLowerCase()) {
         case '0':

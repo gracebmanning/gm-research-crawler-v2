@@ -6,8 +6,8 @@ let rl = readline.createInterface({
   output: process.stdout
 });
 
-async function loadData(key:string){
-    const value = await client.get(key);
+async function loadData(url:string, field:string){
+    const value = await client.HGET(url, field);
     console.log(value);
 }
 
@@ -17,8 +17,7 @@ let exportAllData = async()=>{
 
 // export data for one URL
 let exportURLData = async(url:string)=>{
-  console.log(url);
-  return url;
+  console.log('cookies: ', loadData(url, 'cookies'));
 }
 
 const client = createClient({ url: "redis://127.0.0.1:6379" });
