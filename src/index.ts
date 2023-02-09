@@ -22,10 +22,12 @@ let main = async()=>{
     try{
         const browser = await puppeteer.launch({ headless:true });
         const page = await browser.newPage();
-        const URL = 'https://grace-manning.com';
+        const urlAsString = 'https://bigbudpress.com/';
         
-        await page.goto(URL, {waitUntil: 'networkidle2'}); // waits until page is fully loaded
+        await page.goto(urlAsString, {waitUntil: 'networkidle2'}); // waits until page is fully loaded
         await delay(1000, 2000); // emulates human behavior
+
+        let url = new URL(urlAsString);
         
         const links = await page.evaluate(() => {
             const anchors = document.getElementsByTagName('a');
@@ -36,8 +38,30 @@ let main = async()=>{
         //setData("numLinks", links.length);
         //loadData("numLinks");
 
+        // cookies
         const cookies = await page.cookies();
         console.log(JSON.stringify(cookies));
+        // store set of cookies
+        // store numCookies
+
+        // certifications
+        // count certifications
+        // store set of certs & numCerts
+
+        // sustainability count
+        // count num keywords / buzzwords
+
+        // categories
+        // store set of unique categories
+
+        // sizes
+        // store set of sizes seen on size (unique)
+        // count num sizes
+
+        // pages
+        // count number of pages found within the domain
+        // (use counter variable / set of unique seen links)
+
 
         await browser.close();
     }
@@ -47,8 +71,15 @@ let main = async()=>{
 }
 
 let run = async()=>{
+    // connect to Redis server
     await client.connect();
+
+    // define seed URLs
+    let seeds = [];
+
     await main();
+
+    // disconnect from Redis server
     await client.disconnect();
 }
 
