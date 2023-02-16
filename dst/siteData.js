@@ -2,7 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sites = exports.abbreviations = void 0;
 exports.abbreviations = new Map([
+    ["https://www.forever21.com/", "F21"],
+    ["https://us.shein.com/", "SH"],
+    ["https://www.fashionnova.com/", "FN"],
+    ["https://www2.hm.com/en_us/index.html", "HM"],
+    ["https://www.prettylittlething.us/", "PLT"],
     ["https://bigbudpress.com/", "BBP"],
+    ["https://www.sezane.com/us", "SZ"],
+    ["https://www.fashionbrandcompany.com/", "FBC"],
+    ["https://shoptunnelvision.com/", "TV"],
+    ["https://igirlworld.com/", "IG"],
 ]);
 exports.sites = [
     'https://www.forever21.com/',

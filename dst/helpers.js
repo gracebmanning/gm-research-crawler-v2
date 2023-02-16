@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCategories = exports.getAbbr = void 0;
+exports.validLinks = exports.getAbbr = void 0;
 const siteData_1 = require("./siteData");
 function getAbbr(url) {
     let result = siteData_1.abbreviations.get(url);
@@ -12,7 +12,15 @@ function getAbbr(url) {
     }
 }
 exports.getAbbr = getAbbr;
-function getCategories(url) {
-    return url;
+// returns array of links with same domain name as url
+function validLinks(url, links) {
+    var valid = [];
+    let domain = new URL(url).hostname;
+    links.forEach((l) => {
+        if (new URL(l).hostname == domain) {
+            valid.push(l);
+        }
+    });
+    return valid;
 }
-exports.getCategories = getCategories;
+exports.validLinks = validLinks;

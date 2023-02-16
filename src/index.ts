@@ -11,28 +11,28 @@ function delay(min: number, max: number){
     return new Promise(r => setTimeout(r, Math.floor(Math.random()*(max-min) + min)))
 }
 
-async function setData(url:string, key:string, value:any){    
-    await client.HSET(url, key, value);
-}
-
 async function storeCookies(cookiesList:Protocol.Network.Cookie[], urlAsString:string){
     const cookies:Set<string> = new Set(Array.from(cookiesList).map(c => JSON.stringify(c)));
-    
     let abbr:string = getAbbr(urlAsString);
-    setData(urlAsString, 'cookies', abbr+'cookies'); // store set of cookies
-    setData(urlAsString, 'numCookies', abbr+'numCookies'); // store numCookies
+
+    await client.HSET(urlAsString, 'cookies', abbr+'cookies'); // store reference to set of cookies
+    await client.HSET(urlAsString, 'numCookies', abbr+'numCookies'); // store reference to numCookies
+    
+    // create set of cookies
     for(let c of cookies){
-        var result:number = await client.SADD(abbr+'cookies', c);
-        console.log(result);
+        await client.SADD(abbr+'cookies', c);
     }
+
+    // store numCookies
     await client.SET(abbr+'numCookies', cookies.size.toString());
 }
 
-async function main() {
+async function main(url:string) {
     try {
+        console.log(url);
         const browser = await puppeteer.launch({ headless: true });
         const page = await browser.newPage();
-        const url = 'https://bigbudpress.com/';
+        //const url = 'https://bigbudpress.com/';
 
         await page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
         await delay(1000, 2000); // emulates human behavior
@@ -43,11 +43,17 @@ async function main() {
         });
 
         // add URL to visited
-        visited.add(url);
+        seen.add(url);
 
-        // add valid links to queue
-        queue.concat(validLinks(url, links));
-
+        // get valid links, add to queue (and seen set) if not seen 
+        let valid = validLinks(url, links);
+        valid.forEach((l) => {
+            if(!seen.has(l)){
+                queue.push(l);
+                seen.add(l);
+            }
+        });
+        
         // cookies
         const cookies = await page.cookies();
         storeCookies(cookies, url);
@@ -74,7 +80,18 @@ async function main() {
 
 let run = async()=>{
     await client.connect(); // connect to Redis server
-    await main();
+
+    for(const seedURL of seeds){
+        queue.push(seedURL);
+        while(queue.length != 0){
+            let url = queue.pop(); // remove next url from queue
+            if(url != undefined){
+                await main(url);
+            }
+            console.log(queue);
+        }
+    }
+
     await client.disconnect(); // disconnect from Redis server
 }
 
@@ -89,6 +106,6 @@ var seeds:Set<string> = new Set();     // var seeds = new Set(sites); ...use sit
 seeds.add('https://bigbudpress.com/'); // just one seed URL right now
 
 var queue:Array<string> = new Array(); // links to visit next
-var visited:Set<string> = new Set(); // unique visited links
+var seen:Set<string> = new Set(); // unique seen links
 
 run();
