@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sites = exports.abbreviations = void 0;
+exports.certsRegExp = exports.sites = exports.abbreviations = void 0;
 exports.abbreviations = new Map([
     ["https://www.forever21.com/", "F21"],
     ["https://us.shein.com/", "SH"],
@@ -25,3 +25,4 @@ exports.sites = [
     'https://shoptunnelvision.com/',
     'https://igirlworld.com/'
 ];
+exports.certsRegExp = /(B Corp)|(B-Corp)|(OEKO-TEX)|(OEKO TEX)|(SEDEX)|(SGS)|(WRAP)|(NAFTA)/gi;

@@ -35,13 +35,18 @@ function storeCookies(cookiesList, urlAsString) {
         yield client.SET(abbr + 'numCookies', cookies.size.toString());
     });
 }
+function storeCertifications(content) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var count = (0, helpers_1.countCertifications)(content);
+        // store in Redis
+    });
+}
 function main(url) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            console.log(url);
             const browser = yield puppeteer_1.default.launch({ headless: true });
             const page = yield browser.newPage();
-            //const url = 'https://bigbudpress.com/';
+            yield page.setUserAgent('Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0');
             yield page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
             yield delay(1000, 2000); // emulates human behavior
             const links = yield page.evaluate(() => {
@@ -62,6 +67,8 @@ function main(url) {
             const cookies = yield page.cookies();
             storeCookies(cookies, url);
             // certifications
+            const content = yield page.content();
+            storeCertifications(content);
             // count certifications
             // store set of certs & numCerts
             // sustainability count
@@ -101,7 +108,7 @@ let run = () => __awaiter(void 0, void 0, void 0, function* () {
 const client = (0, redis_1.createClient)({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err) => console.log('Redis Client Error', err));
 var seeds = new Set(); // var seeds = new Set(sites); ...use sites array from siteData.ts file              
-seeds.add('https://bigbudpress.com/'); // just one seed URL right now
+seeds.add('https://us.shein.com/'); // just one seed URL right now
 var queue = new Array(); // links to visit next
 var seen = new Set(); // unique seen links
 run();

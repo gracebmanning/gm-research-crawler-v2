@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer';
 import { Protocol } from 'puppeteer';
 import { createClient } from 'redis';
-import { getAbbr, validLinks } from './helpers';
+import { countCertifications, getAbbr, validLinks } from './helpers';
 
 /**
  * FUNCTION DEFINITIONS
@@ -27,12 +27,16 @@ async function storeCookies(cookiesList:Protocol.Network.Cookie[], urlAsString:s
     await client.SET(abbr+'numCookies', cookies.size.toString());
 }
 
+async function storeCertifications(content:string){
+    var count = countCertifications(content);
+    // store in Redis
+}
+
 async function main(url:string) {
     try {
-        console.log(url);
         const browser = await puppeteer.launch({ headless: true });
         const page = await browser.newPage();
-        //const url = 'https://bigbudpress.com/';
+        await page.setUserAgent('Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0');
 
         await page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
         await delay(1000, 2000); // emulates human behavior
@@ -59,6 +63,9 @@ async function main(url:string) {
         storeCookies(cookies, url);
 
         // certifications
+        const content = await page.content();
+        storeCertifications(content);
+        
         // count certifications
         // store set of certs & numCerts
         // sustainability count
@@ -103,7 +110,7 @@ const client = createClient({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err:Error) => console.log('Redis Client Error', err));
 
 var seeds:Set<string> = new Set();     // var seeds = new Set(sites); ...use sites array from siteData.ts file              
-seeds.add('https://bigbudpress.com/'); // just one seed URL right now
+seeds.add('https://us.shein.com/'); // just one seed URL right now
 
 var queue:Array<string> = new Array(); // links to visit next
 var seen:Set<string> = new Set(); // unique seen links

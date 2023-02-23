@@ -23,3 +23,5 @@ export var sites:string[] = [
     'https://shoptunnelvision.com/',
     'https://igirlworld.com/'
 ]
+
+export var certsRegExp:RegExp = /(B Corp)|(B-Corp)|(OEKO-TEX)|(OEKO TEX)|(SEDEX)|(SGS)|(WRAP)|(NAFTA)/gi;

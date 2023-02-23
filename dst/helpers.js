@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validLinks = exports.getAbbr = void 0;
+exports.countCertifications = exports.validLinks = exports.getAbbr = void 0;
 const siteData_1 = require("./siteData");
 function getAbbr(url) {
     let result = siteData_1.abbreviations.get(url);
@@ -17,10 +17,15 @@ function validLinks(url, links) {
     var valid = [];
     let domain = new URL(url).hostname;
     links.forEach((l) => {
-        if (new URL(l).hostname == domain) {
+        if (l != '' && new URL(l).hostname == domain) {
             valid.push(l);
         }
     });
     return valid;
 }
 exports.validLinks = validLinks;
+function countCertifications(content) {
+    var count = (content.match(siteData_1.certsRegExp) || []).length;
+    return count;
+}
+exports.countCertifications = countCertifications;

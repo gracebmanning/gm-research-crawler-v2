@@ -1,4 +1,4 @@
-import { abbreviations } from './siteData';
+import { abbreviations, certsRegExp } from './siteData';
 
 export function getAbbr(url:string):string{
     let result = abbreviations.get(url);
@@ -16,10 +16,17 @@ export function validLinks(url:string, links:string[]):string[]{
     let domain = new URL(url).hostname;
     
     links.forEach( (l) => {
-        if(new URL(l).hostname == domain){
+        if(l != '' && new URL(l).hostname == domain){
             valid.push(l);
         }
     });
 
     return valid;
+}
+
+export function countCertifications(content:string):number{
+    var count = (content.match(certsRegExp) || []).length;
+    return count;
+
+
 }
