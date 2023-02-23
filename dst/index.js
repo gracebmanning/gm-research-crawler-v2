@@ -46,7 +46,7 @@ function main(url) {
         try {
             const browser = yield puppeteer_1.default.launch({ headless: true });
             const page = yield browser.newPage();
-            yield page.setUserAgent('Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0');
+            yield page.setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 13_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/110.0.0.0 Mobile/15E148 Safari/604.1');
             yield page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
             yield delay(1000, 2000); // emulates human behavior
             const links = yield page.evaluate(() => {
@@ -108,7 +108,7 @@ let run = () => __awaiter(void 0, void 0, void 0, function* () {
 const client = (0, redis_1.createClient)({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err) => console.log('Redis Client Error', err));
 var seeds = new Set(); // var seeds = new Set(sites); ...use sites array from siteData.ts file              
-seeds.add('https://us.shein.com/'); // just one seed URL right now
+seeds.add('https://www.sezane.com/us'); // just one seed URL right now
 var queue = new Array(); // links to visit next
 var seen = new Set(); // unique seen links
 run();

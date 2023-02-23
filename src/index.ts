@@ -36,7 +36,7 @@ async function main(url:string) {
     try {
         const browser = await puppeteer.launch({ headless: true });
         const page = await browser.newPage();
-        await page.setUserAgent('Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0');
+        await page.setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 13_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/110.0.0.0 Mobile/15E148 Safari/604.1');
 
         await page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
         await delay(1000, 2000); // emulates human behavior
@@ -110,7 +110,7 @@ const client = createClient({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err:Error) => console.log('Redis Client Error', err));
 
 var seeds:Set<string> = new Set();     // var seeds = new Set(sites); ...use sites array from siteData.ts file              
-seeds.add('https://us.shein.com/'); // just one seed URL right now
+seeds.add('https://www.sezane.com/us'); // just one seed URL right now
 
 var queue:Array<string> = new Array(); // links to visit next
 var seen:Set<string> = new Set(); // unique seen links
