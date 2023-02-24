@@ -8,11 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const puppeteer_1 = __importDefault(require("puppeteer"));
 const redis_1 = require("redis");
 const helpers_1 = require("./helpers");
 /**
@@ -44,11 +40,23 @@ function storeCertifications(content) {
 function main(url) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const browser = yield puppeteer_1.default.launch({ headless: true });
+            const puppeteer = require('puppeteer-extra');
+            const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+            puppeteer.use(StealthPlugin());
+            /*const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha');
+            puppeteer.use(
+                RecaptchaPlugin({
+                    provider: { id: '2captcha', token: 'XXXXXXX' },
+                    visualFeedback: true
+                })
+            ) */
+            const { executablePath } = require('puppeteer');
+            const browser = yield puppeteer.launch({ headless: true, executablePath: executablePath() });
             const page = yield browser.newPage();
             yield page.setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 13_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/110.0.0.0 Mobile/15E148 Safari/604.1');
             yield page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
             yield delay(1000, 2000); // emulates human behavior
+            // await page.solveRecaptchas();
             const links = yield page.evaluate(() => {
                 const anchors = document.getElementsByTagName('a');
                 return Array.from(anchors).map(a => a.href);
@@ -108,7 +116,7 @@ let run = () => __awaiter(void 0, void 0, void 0, function* () {
 const client = (0, redis_1.createClient)({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err) => console.log('Redis Client Error', err));
 var seeds = new Set(); // var seeds = new Set(sites); ...use sites array from siteData.ts file              
-seeds.add('https://www.sezane.com/us'); // just one seed URL right now
+seeds.add('https://www.forever21.com/'); // just one seed URL right now
 var queue = new Array(); // links to visit next
 var seen = new Set(); // unique seen links
 run();

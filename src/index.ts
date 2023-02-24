@@ -1,4 +1,5 @@
-import puppeteer from 'puppeteer';
+//import puppeteer from 'puppeteer';
+//import puppeteer from 'puppeteer-extra-plugin-recaptcha';
 import { Protocol } from 'puppeteer';
 import { createClient } from 'redis';
 import { countCertifications, getAbbr, validLinks } from './helpers';
@@ -34,12 +35,26 @@ async function storeCertifications(content:string){
 
 async function main(url:string) {
     try {
-        const browser = await puppeteer.launch({ headless: true });
+        const puppeteer = require('puppeteer-extra');
+        const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+        puppeteer.use(StealthPlugin());
+        
+        /*const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha');
+        puppeteer.use(
+            RecaptchaPlugin({
+                provider: { id: '2captcha', token: 'XXXXXXX' },
+                visualFeedback: true
+            })
+        ) */
+        
+        const { executablePath } = require('puppeteer');
+        const browser = await puppeteer.launch({ headless: true, executablePath: executablePath() });
         const page = await browser.newPage();
         await page.setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 13_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/110.0.0.0 Mobile/15E148 Safari/604.1');
 
         await page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
         await delay(1000, 2000); // emulates human behavior
+        // await page.solveRecaptchas();
 
         const links = await page.evaluate(() => {
             const anchors = document.getElementsByTagName('a');
@@ -110,7 +125,7 @@ const client = createClient({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err:Error) => console.log('Redis Client Error', err));
 
 var seeds:Set<string> = new Set();     // var seeds = new Set(sites); ...use sites array from siteData.ts file              
-seeds.add('https://www.sezane.com/us'); // just one seed URL right now
+seeds.add('https://www.forever21.com/'); // just one seed URL right now
 
 var queue:Array<string> = new Array(); // links to visit next
 var seen:Set<string> = new Set(); // unique seen links
