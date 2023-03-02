@@ -1,8 +1,7 @@
 //import puppeteer from 'puppeteer';
 //import puppeteer from 'puppeteer-extra-plugin-recaptcha';
-import { Protocol } from 'puppeteer';
 import { createClient } from 'redis';
-import { countCertifications, getAbbr, validLinks } from './helpers';
+import { validLinks, storeCookies, storeCertifications } from './helpers';
 
 /**
  * FUNCTION DEFINITIONS
@@ -10,27 +9,6 @@ import { countCertifications, getAbbr, validLinks } from './helpers';
 
 function delay(min: number, max: number){
     return new Promise(r => setTimeout(r, Math.floor(Math.random()*(max-min) + min)))
-}
-
-async function storeCookies(cookiesList:Protocol.Network.Cookie[], urlAsString:string){
-    const cookies:Set<string> = new Set(Array.from(cookiesList).map(c => JSON.stringify(c)));
-    let abbr:string = getAbbr(urlAsString);
-
-    await client.HSET(urlAsString, 'cookies', abbr+'cookies'); // store reference to set of cookies
-    await client.HSET(urlAsString, 'numCookies', abbr+'numCookies'); // store reference to numCookies
-    
-    // create set of cookies
-    for(let c of cookies){
-        await client.SADD(abbr+'cookies', c);
-    }
-
-    // store numCookies
-    await client.SET(abbr+'numCookies', cookies.size.toString());
-}
-
-async function storeCertifications(content:string){
-    var count = countCertifications(content);
-    // store in Redis
 }
 
 async function main(url:string) {
@@ -61,7 +39,7 @@ async function main(url:string) {
             return Array.from(anchors).map(a => a.href);
         });
 
-        // add URL to visited
+        // add URL to seen links
         seen.add(url);
 
         // get valid links, add to queue (and seen set) if not seen 
@@ -75,14 +53,15 @@ async function main(url:string) {
         
         // cookies
         const cookies = await page.cookies();
-        storeCookies(cookies, url);
+        storeCookies(client, cookies, url);
 
         // certifications
         const content = await page.content();
-        storeCertifications(content);
+        storeCertifications(client, content);
         
         // count certifications
         // store set of certs & numCerts
+        
         // sustainability count
         // count num keywords / buzzwords
         // categories
@@ -110,10 +89,9 @@ let run = async()=>{
             if(url != undefined){
                 await main(url);
             }
-            console.log(queue);
+            console.log(seen);
         }
     }
-
     await client.disconnect(); // disconnect from Redis server
 }
 
@@ -125,7 +103,7 @@ const client = createClient({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err:Error) => console.log('Redis Client Error', err));
 
 var seeds:Set<string> = new Set();     // var seeds = new Set(sites); ...use sites array from siteData.ts file              
-seeds.add('https://www.forever21.com/'); // just one seed URL right now
+seeds.add('https://www.forever21.com'); // just one seed URL right now
 
 var queue:Array<string> = new Array(); // links to visit next
 var seen:Set<string> = new Set(); // unique seen links

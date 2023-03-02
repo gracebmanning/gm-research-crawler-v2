@@ -9,6 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+//import puppeteer from 'puppeteer';
+//import puppeteer from 'puppeteer-extra-plugin-recaptcha';
 const redis_1 = require("redis");
 const helpers_1 = require("./helpers");
 /**
@@ -16,20 +18,6 @@ const helpers_1 = require("./helpers");
  */
 function delay(min, max) {
     return new Promise(r => setTimeout(r, Math.floor(Math.random() * (max - min) + min)));
-}
-function storeCookies(cookiesList, urlAsString) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const cookies = new Set(Array.from(cookiesList).map(c => JSON.stringify(c)));
-        let abbr = (0, helpers_1.getAbbr)(urlAsString);
-        yield client.HSET(urlAsString, 'cookies', abbr + 'cookies'); // store reference to set of cookies
-        yield client.HSET(urlAsString, 'numCookies', abbr + 'numCookies'); // store reference to numCookies
-        // create set of cookies
-        for (let c of cookies) {
-            yield client.SADD(abbr + 'cookies', c);
-        }
-        // store numCookies
-        yield client.SET(abbr + 'numCookies', cookies.size.toString());
-    });
 }
 function storeCertifications(content) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -61,7 +49,7 @@ function main(url) {
                 const anchors = document.getElementsByTagName('a');
                 return Array.from(anchors).map(a => a.href);
             });
-            // add URL to visited
+            // add URL to seen links
             seen.add(url);
             // get valid links, add to queue (and seen set) if not seen 
             let valid = (0, helpers_1.validLinks)(url, links);
@@ -73,7 +61,7 @@ function main(url) {
             });
             // cookies
             const cookies = yield page.cookies();
-            storeCookies(cookies, url);
+            (0, helpers_1.storeCookies)(client, cookies, url);
             // certifications
             const content = yield page.content();
             storeCertifications(content);
@@ -105,7 +93,7 @@ let run = () => __awaiter(void 0, void 0, void 0, function* () {
             if (url != undefined) {
                 yield main(url);
             }
-            console.log(queue);
+            console.log(seen);
         }
     }
     yield client.disconnect(); // disconnect from Redis server
@@ -116,7 +104,7 @@ let run = () => __awaiter(void 0, void 0, void 0, function* () {
 const client = (0, redis_1.createClient)({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err) => console.log('Redis Client Error', err));
 var seeds = new Set(); // var seeds = new Set(sites); ...use sites array from siteData.ts file              
-seeds.add('https://www.forever21.com/'); // just one seed URL right now
+seeds.add('https://www.forever21.com'); // just one seed URL right now
 var queue = new Array(); // links to visit next
 var seen = new Set(); // unique seen links
 run();
