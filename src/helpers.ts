@@ -1,4 +1,4 @@
-import { abbreviations, certsRegExp } from './siteData';
+import { abbreviations, certsRegExp, keywordsRegExp } from './siteData';
 import { Protocol } from 'puppeteer';
 import { RedisClientType } from '@redis/client';
 
@@ -21,7 +21,6 @@ export function getUrlBase(url:string):string{
 export function validLinks(url:string, links:string[]):string[]{
     var valid:string[] = [];
     let domain = new URL(url).hostname;
-    
     links.forEach( (l) => {
         if(l != '' && new URL(l).hostname == domain){
             let result = l.replace(/#[a-zA-Z]*/gm, "");
@@ -34,40 +33,78 @@ export function validLinks(url:string, links:string[]):string[]{
     return valid;
 }
 
-export function countCertifications(content:string):number{
-    var count = (content.match(certsRegExp) || []).length;
-    return count;
+// used for collecting certifications and keywords
+export function searchContent(type:string, content:string):Set<string>{
+    let regex = (type == "certs") ? certsRegExp : keywordsRegExp;
+    let matches = content.match(regex)?.map(c => c.toLowerCase());
+    return new Set(matches);
+}
+
+// used to set hash references for a url
+async function setReferences(type:string, untypedClient:any, abbr:string, urlAsString:string){
+    let client = <RedisClientType>untypedClient;
+    // check if [type] key is already defined
+    let key1 = await client.EXISTS(abbr+type);
+    if(key1 == 0){
+        await client.HSET(urlAsString, type, abbr+type); // store reference to set of cookies
+    }
+    // check if num[type] key is already defined
+    let key2 = await client.EXISTS(abbr+'num'+type)
+    if(key2 == 0){
+        await client.HSET(urlAsString, 'num'+type, abbr+'num'+type); // store reference to numCookies
+    }
 }
 
 export async function storeCookies(untypedClient:any, cookiesList:Protocol.Network.Cookie[], urlAsString:string){
     let client = <RedisClientType>untypedClient;
-    const cookies:Set<string> = new Set(Array.from(cookiesList).map(c => JSON.stringify(c)));
     let urlBase:string = getUrlBase(urlAsString);
     let abbr:string = getAbbr(urlBase);
+    const cookies:Set<string> = new Set(Array.from(cookiesList).map(c => JSON.stringify(c)));
 
-    // check if cookies key is already defined
-    let key1 = await client.EXISTS(abbr+'cookies');
-    if(key1 == 0){
-        await client.HSET(urlAsString, 'cookies', abbr+'cookies'); // store reference to set of cookies
-    }
-    // check if numCookies key is already defined
-    let key2 = await client.EXISTS(abbr+'numCookies')
-    if(key2 == 0){
-        await client.HSET(urlAsString, 'numCookies', abbr+'numCookies'); // store reference to numCookies
-    }
+    setReferences('cookies', client, abbr, urlAsString);
     
-    // create set of cookies
+    // store set of cookies
     for(let c of cookies){
         await client.SADD(abbr+'cookies', c);
     }
 
     // store numCookies
-    await client.SET(abbr+'numCookies', cookies.size.toString());
+    await client.SET(abbr+'numcookies', cookies.size.toString());
 }
 
 
-export async function storeCertifications(untypedClient:any, content:string){
-    var count = countCertifications(content);
+export async function storeCertifications(untypedClient:any, content:string, urlAsString:string){
     let client = <RedisClientType>untypedClient;
+    let urlBase:string = getUrlBase(urlAsString);
+    let abbr:string = getAbbr(urlBase);
+    var certs:Set<string> = searchContent('certs', content);
+
+    setReferences('certs', client, abbr, urlAsString);
+
     // store in Redis
+    // create set of certs
+    for(let c of certs){
+        await client.SADD(abbr+'certs', c);
+    }
+
+    // store numCerts
+    await client.SET(abbr+'numcerts', certs.size.toString());
+}
+
+export async function storeKeywords(untypedClient:any, content:string, urlAsString:string){
+    let client = <RedisClientType>untypedClient;
+    let urlBase:string = getUrlBase(urlAsString);
+    let abbr:string = getAbbr(urlBase);
+    var keywords:Set<string> = searchContent('keywords', content);
+
+    setReferences('keywords', client, abbr, urlAsString);
+
+    // store in Redis
+    // create set of keywords
+    for(let k of keywords){
+        await client.SADD(abbr+'keywords', k);
+    }
+
+    // store numKeywords
+    await client.SET(abbr+'numkeywords', keywords.size.toString());
 }

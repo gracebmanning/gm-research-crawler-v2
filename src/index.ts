@@ -1,7 +1,7 @@
 //import puppeteer from 'puppeteer';
 //import puppeteer from 'puppeteer-extra-plugin-recaptcha';
 import { createClient } from 'redis';
-import { validLinks, storeCookies, storeCertifications } from './helpers';
+import { validLinks, storeCookies, storeCertifications, storeKeywords } from './helpers';
 
 /**
  * FUNCTION DEFINITIONS
@@ -55,15 +55,15 @@ async function main(url:string) {
         const cookies = await page.cookies();
         storeCookies(client, cookies, url);
 
-        // certifications
         const content = await page.content();
-        storeCertifications(client, content);
-        
-        // count certifications
-        // store set of certs & numCerts
+
+        // certifications
+        storeCertifications(client, content, url);
         
         // sustainability count
         // count num keywords / buzzwords
+        storeKeywords(client, content, url);
+
         // categories
         // store set of unique categories
         // sizes

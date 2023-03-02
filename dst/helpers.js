@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.storeCookies = exports.countCertifications = exports.validLinks = exports.getUrlBase = exports.getAbbr = void 0;
+exports.storeKeywords = exports.storeCertifications = exports.storeCookies = exports.searchContent = exports.validLinks = exports.getUrlBase = exports.getAbbr = void 0;
 const siteData_1 = require("./siteData");
 function getAbbr(url) {
     let result = siteData_1.abbreviations.get(url);
@@ -42,33 +42,78 @@ function validLinks(url, links) {
     return valid;
 }
 exports.validLinks = validLinks;
-function countCertifications(content) {
-    var count = (content.match(siteData_1.certsRegExp) || []).length;
-    return count;
+// used for collecting certifications and keywords
+function searchContent(type, content) {
+    var _a;
+    let regex = (type == "certs") ? siteData_1.certsRegExp : siteData_1.keywordsRegExp;
+    let matches = (_a = content.match(regex)) === null || _a === void 0 ? void 0 : _a.map(c => c.toLowerCase());
+    return new Set(matches);
 }
-exports.countCertifications = countCertifications;
+exports.searchContent = searchContent;
+// used to set hash references for a url
+function setReferences(type, untypedClient, abbr, urlAsString) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let client = untypedClient;
+        // check if [type] key is already defined
+        let key1 = yield client.EXISTS(abbr + type);
+        if (key1 == 0) {
+            yield client.HSET(urlAsString, type, abbr + type); // store reference to set of cookies
+        }
+        // check if num[type] key is already defined
+        let key2 = yield client.EXISTS(abbr + 'num' + type);
+        if (key2 == 0) {
+            yield client.HSET(urlAsString, 'num' + type, abbr + 'num' + type); // store reference to numCookies
+        }
+    });
+}
 function storeCookies(untypedClient, cookiesList, urlAsString) {
     return __awaiter(this, void 0, void 0, function* () {
         let client = untypedClient;
         const cookies = new Set(Array.from(cookiesList).map(c => JSON.stringify(c)));
         let urlBase = getUrlBase(urlAsString);
         let abbr = getAbbr(urlBase);
-        // check if cookies key is already defined
-        let key1 = yield client.EXISTS(abbr + 'cookies');
-        if (key1 == 0) {
-            yield client.HSET(urlAsString, 'cookies', abbr + 'cookies'); // store reference to set of cookies
-        }
-        // check if numCookies key is already defined
-        let key2 = yield client.EXISTS(abbr + 'numCookies');
-        if (key2 == 0) {
-            yield client.HSET(urlAsString, 'numCookies', abbr + 'numCookies'); // store reference to numCookies
-        }
-        // create set of cookies
+        setReferences('cookies', client, abbr, urlAsString);
+        // store set of cookies
         for (let c of cookies) {
             yield client.SADD(abbr + 'cookies', c);
         }
         // store numCookies
-        yield client.SET(abbr + 'numCookies', cookies.size.toString());
+        yield client.SET(abbr + 'numcookies', cookies.size.toString());
     });
 }
 exports.storeCookies = storeCookies;
+function storeCertifications(untypedClient, content, urlAsString) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let client = untypedClient;
+        let urlBase = getUrlBase(urlAsString);
+        let abbr = getAbbr(urlBase);
+        var certs = searchContent('certs', content);
+        // check if certs key is already defined
+        let key1 = yield client.EXISTS(abbr + 'certs');
+        if (key1 == 0) {
+            yield client.HSET(urlAsString, 'certs', abbr + 'certs'); // store reference to set of certs
+        }
+        // check if numCerts key is already defined
+        let key2 = yield client.EXISTS(abbr + 'numCerts');
+        if (key2 == 0) {
+            yield client.HSET(urlAsString, 'numCerts', abbr + 'numCerts'); // store reference to numCerts
+        }
+        // store in Redis
+        // create set of cookies
+        for (let c of certs) {
+            yield client.SADD(abbr + 'certs', c);
+        }
+        // store numCerts
+        yield client.SET(abbr + 'numCerts', certs.size.toString());
+    });
+}
+exports.storeCertifications = storeCertifications;
+function storeKeywords(untypedClient, content, urlAsString) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let client = untypedClient;
+        let urlBase = getUrlBase(urlAsString);
+        let abbr = getAbbr(urlBase);
+        var keywords = searchContent('keywords', content);
+    });
+}
+exports.storeKeywords = storeKeywords;

@@ -25,3 +25,5 @@ export var sites:string[] = [
 ]
 
 export var certsRegExp:RegExp = /(B Corp)|(B-Corp)|(OEKO-TEX)|(OEKO TEX)|(SEDEX)|(SGS)|(WRAP)|(NAFTA)/gi;
+
+export var keywordsRegExp:RegExp = /(sustainability)|(sustainable)|(recyclable)|(reusable)|(environment)|(environmentally friendly)|(social responsibility)|(ethical)/gi;

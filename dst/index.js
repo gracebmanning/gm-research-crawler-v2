@@ -19,12 +19,6 @@ const helpers_1 = require("./helpers");
 function delay(min, max) {
     return new Promise(r => setTimeout(r, Math.floor(Math.random() * (max - min) + min)));
 }
-function storeCertifications(content) {
-    return __awaiter(this, void 0, void 0, function* () {
-        var count = (0, helpers_1.countCertifications)(content);
-        // store in Redis
-    });
-}
 function main(url) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -62,13 +56,12 @@ function main(url) {
             // cookies
             const cookies = yield page.cookies();
             (0, helpers_1.storeCookies)(client, cookies, url);
-            // certifications
             const content = yield page.content();
-            storeCertifications(content);
-            // count certifications
-            // store set of certs & numCerts
+            // certifications
+            (0, helpers_1.storeCertifications)(client, content, url);
             // sustainability count
             // count num keywords / buzzwords
+            (0, helpers_1.storeKeywords)(client, content, url);
             // categories
             // store set of unique categories
             // sizes
