@@ -69,9 +69,9 @@ function setReferences(type, untypedClient, abbr, urlAsString) {
 function storeCookies(untypedClient, cookiesList, urlAsString) {
     return __awaiter(this, void 0, void 0, function* () {
         let client = untypedClient;
-        const cookies = new Set(Array.from(cookiesList).map(c => JSON.stringify(c)));
         let urlBase = getUrlBase(urlAsString);
         let abbr = getAbbr(urlBase);
+        const cookies = new Set(Array.from(cookiesList).map(c => JSON.stringify(c)));
         setReferences('cookies', client, abbr, urlAsString);
         // store set of cookies
         for (let c of cookies) {
@@ -88,23 +88,14 @@ function storeCertifications(untypedClient, content, urlAsString) {
         let urlBase = getUrlBase(urlAsString);
         let abbr = getAbbr(urlBase);
         var certs = searchContent('certs', content);
-        // check if certs key is already defined
-        let key1 = yield client.EXISTS(abbr + 'certs');
-        if (key1 == 0) {
-            yield client.HSET(urlAsString, 'certs', abbr + 'certs'); // store reference to set of certs
-        }
-        // check if numCerts key is already defined
-        let key2 = yield client.EXISTS(abbr + 'numCerts');
-        if (key2 == 0) {
-            yield client.HSET(urlAsString, 'numCerts', abbr + 'numCerts'); // store reference to numCerts
-        }
+        setReferences('certs', client, abbr, urlAsString);
         // store in Redis
-        // create set of cookies
+        // create set of certs
         for (let c of certs) {
             yield client.SADD(abbr + 'certs', c);
         }
         // store numCerts
-        yield client.SET(abbr + 'numCerts', certs.size.toString());
+        yield client.SET(abbr + 'numcerts', certs.size.toString());
     });
 }
 exports.storeCertifications = storeCertifications;
@@ -114,6 +105,14 @@ function storeKeywords(untypedClient, content, urlAsString) {
         let urlBase = getUrlBase(urlAsString);
         let abbr = getAbbr(urlBase);
         var keywords = searchContent('keywords', content);
+        setReferences('keywords', client, abbr, urlAsString);
+        // store in Redis
+        // create set of keywords
+        for (let k of keywords) {
+            yield client.SADD(abbr + 'keywords', k);
+        }
+        // store numKeywords
+        yield client.SET(abbr + 'numkeywords', keywords.size.toString());
     });
 }
 exports.storeKeywords = storeKeywords;
