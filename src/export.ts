@@ -31,7 +31,7 @@ let question = `Which URL data would you like to export?\n
 4: https://www2.hm.com/en_us/index.html\n
 5: https://www.prettylittlething.us/\n
 6: https://bigbudpress.com/\n
-7: https://www.sezane.com/us\n
+7: https://chnge.com\n
 8: https://www.fashionbrandcompany.com/\n
 9: https://shoptunnelvision.com/\n
 10: https://igirlworld.com/\n\n`;
@@ -60,7 +60,7 @@ rl.question(question, (answer) => {
         exportURLData('https://bigbudpress.com/');
         break;
       case '7':
-        exportURLData('https://www.sezane.com/us');
+        exportURLData('https://chnge.com');
         break;
       case '8':
         exportURLData('https://www.fashionbrandcompany.com/');
