@@ -25,5 +25,22 @@ exports.sites = [
     'https://shoptunnelvision.com',
     'https://igirlworld.com'
 ];
-exports.certsRegExp = /(B Corp)|(B-Corp)|(OEKO-TEX)|(OEKO TEX)|(SEDEX)|(SGS)|(WRAP)|(NAFTA)/gi;
-exports.keywordsRegExp = /(sustainability)|(sustainable)|(recyclable)|(reusable)|(environment)|(environmentally friendly)|(social responsibility)|(ethical)/gi;
+let certs = `(B Corp)|(B-Corp)
+            |(OEKO-TEX)|(OEKO TEX)
+            |(SEDEX)|(Supplier Ethical Data Exchange)
+            |(SGS)|(Société Générale de Surveillance)
+            |(WRAP)|(Worldwide Responsible Accredited Production)
+            |(NAFTA)|(North American Free Trade Agreement)
+            |(GOTS)|(Global Organic Textile Standard)
+            |(LEED)|(Leadership in Energy and Environmental Design)`;
+exports.certsRegExp = new RegExp(certs, 'gi');
+let keywords = `(sustainability)
+               |(sustainable)
+               |(recyclable)
+               |(reusable)
+               |(environment)
+               |(environmentally friendly)
+               |(social responsibility)
+               |(ethical)
+               |(fairtrade)`;
+exports.keywordsRegExp = new RegExp(keywords, 'gi');

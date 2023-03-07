@@ -55,6 +55,7 @@ function setReferences(type, untypedClient, abbr, urlAsString) {
     return __awaiter(this, void 0, void 0, function* () {
         let client = untypedClient;
         // check if [type] key is already defined
+        console.log('abrr:' + abbr);
         let key1 = yield client.EXISTS(abbr + type);
         if (key1 == 0) {
             yield client.HSET(urlAsString, type, abbr + type); // store reference to set of cookies
@@ -117,14 +118,12 @@ function storeKeywords(untypedClient, content, urlAsString) {
 }
 exports.storeKeywords = storeKeywords;
 // type = cookies, certs, keywords
-function storeData(untypedClient, content, urlAsString, type, dataset) {
+function storeData(untypedClient, urlAsString, type, dataset) {
     return __awaiter(this, void 0, void 0, function* () {
         let client = untypedClient;
         let urlBase = getUrlBase(urlAsString);
         let abbr = getAbbr(urlBase);
         var data = dataset;
-        //var data:Set<string> = searchContent(type, content);
-        let c = content;
         setReferences(type, client, abbr, urlAsString);
         // store in Redis
         // create set of data

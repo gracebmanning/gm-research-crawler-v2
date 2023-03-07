@@ -50,14 +50,13 @@ function main(url) {
             // cookies
             const cookies = yield page.cookies();
             //storeCookies(client, cookies, url);
-            (0, helpers_1.storeData)(client, content, url, 'cookies', new Set(Array.from(cookies).map(c => JSON.stringify(c))));
+            (0, helpers_1.storeData)(client, url, 'cookies', new Set(Array.from(cookies).map(c => JSON.stringify(c))));
             // certifications
             //storeCertifications(client, content, url);
-            (0, helpers_1.storeData)(client, content, url, 'certs', (0, helpers_1.searchContent)('certs', content));
-            // sustainability count
-            // count num keywords / buzzwords
-            //storeKeywords(client, content, url);
-            (0, helpers_1.storeData)(client, content, url, 'keywords', (0, helpers_1.searchContent)('keywords', content));
+            (0, helpers_1.storeData)(client, url, 'certs', (0, helpers_1.searchContent)('certs', content));
+            // sustainability count (count num keywords / buzzwords)
+            //storeKeywords(client, content, urls);
+            (0, helpers_1.storeData)(client, url, 'keywords', (0, helpers_1.searchContent)('keywords', content));
             // categories
             // store set of unique categories
             // sizes

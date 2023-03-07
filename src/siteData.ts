@@ -24,6 +24,23 @@ export var sites:string[] = [
     'https://igirlworld.com'
 ]
 
-export var certsRegExp:RegExp = /(B Corp)|(B-Corp)|(OEKO-TEX)|(OEKO TEX)|(SEDEX)|(SGS)|(WRAP)|(NAFTA)/gi;
+let certs = `(B Corp)|(B-Corp)
+            |(OEKO-TEX)|(OEKO TEX)
+            |(SEDEX)|(Supplier Ethical Data Exchange)
+            |(SGS)|(Société Générale de Surveillance)
+            |(WRAP)|(Worldwide Responsible Accredited Production)
+            |(NAFTA)|(North American Free Trade Agreement)
+            |(GOTS)|(Global Organic Textile Standard)
+            |(LEED)|(Leadership in Energy and Environmental Design)`;
+export var certsRegExp:RegExp = new RegExp(certs, 'gi');
 
-export var keywordsRegExp:RegExp = /(sustainability)|(sustainable)|(recyclable)|(reusable)|(environment)|(environmentally friendly)|(social responsibility)|(ethical)/gi;
+let keywords = `(sustainability)
+               |(sustainable)
+               |(recyclable)
+               |(reusable)
+               |(environment)
+               |(environmentally friendly)
+               |(social responsibility)
+               |(ethical)
+               |(fairtrade)`;
+export var keywordsRegExp:RegExp = new RegExp(keywords, 'gi');
