@@ -1,7 +1,7 @@
 //import puppeteer from 'puppeteer';
 //import puppeteer from 'puppeteer-extra-plugin-recaptcha';
 import { createClient } from 'redis';
-import { validLinks, storeCookies, storeCertifications, storeKeywords } from './helpers';
+import { validLinks, storeData, searchContent } from './helpers';
 
 /**
  * FUNCTION DEFINITIONS
@@ -16,15 +16,7 @@ async function main(url:string) {
         const puppeteer = require('puppeteer-extra');
         const StealthPlugin = require('puppeteer-extra-plugin-stealth');
         puppeteer.use(StealthPlugin());
-        
-        /*const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha');
-        puppeteer.use(
-            RecaptchaPlugin({
-                provider: { id: '2captcha', token: 'XXXXXXX' },
-                visualFeedback: true
-            })
-        ) */
-        
+
         const { executablePath } = require('puppeteer');
         const browser = await puppeteer.launch({ headless: true, executablePath: executablePath() });
         const page = await browser.newPage();
@@ -51,18 +43,20 @@ async function main(url:string) {
             }
         });
         
+        const content = await page.content();
+        
         // cookies
         const cookies = await page.cookies();
-        storeCookies(client, cookies, url);
-
-        const content = await page.content();
+        //storeCookies(client, cookies, url);
+        storeData(client, url, 'cookies', new Set(Array.from(cookies).map(c => JSON.stringify(c))));
 
         // certifications
-        storeCertifications(client, content, url);
+        //storeCertifications(client, content, url);
+        storeData(client, url, 'certs', searchContent('certs', content));
         
-        // sustainability count
-        // count num keywords / buzzwords
-        storeKeywords(client, content, url);
+        // sustainability count (count num keywords / buzzwords)
+        //storeKeywords(client, content, urls);
+        storeData(client, url, 'keywords', searchContent('keywords', content));
 
         // categories
         // store set of unique categories

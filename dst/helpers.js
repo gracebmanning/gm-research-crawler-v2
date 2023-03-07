@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.storeKeywords = exports.storeCertifications = exports.storeCookies = exports.searchContent = exports.validLinks = exports.getUrlBase = exports.getAbbr = void 0;
+exports.storeData = exports.storeKeywords = exports.storeCertifications = exports.storeCookies = exports.searchContent = exports.validLinks = exports.getUrlBase = exports.getAbbr = void 0;
 const siteData_1 = require("./siteData");
 function getAbbr(url) {
     let result = siteData_1.abbreviations.get(url);
@@ -116,3 +116,23 @@ function storeKeywords(untypedClient, content, urlAsString) {
     });
 }
 exports.storeKeywords = storeKeywords;
+// type = cookies, certs, keywords
+function storeData(untypedClient, content, urlAsString, type, dataset) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let client = untypedClient;
+        let urlBase = getUrlBase(urlAsString);
+        let abbr = getAbbr(urlBase);
+        var data = dataset;
+        //var data:Set<string> = searchContent(type, content);
+        let c = content;
+        setReferences(type, client, abbr, urlAsString);
+        // store in Redis
+        // create set of data
+        for (let d of data) {
+            yield client.SADD(abbr + type, d);
+        }
+        // store numData
+        yield client.SET(abbr + 'num' + type, data.size.toString());
+    });
+}
+exports.storeData = storeData;

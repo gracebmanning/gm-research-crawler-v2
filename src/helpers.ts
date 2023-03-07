@@ -108,3 +108,24 @@ export async function storeKeywords(untypedClient:any, content:string, urlAsStri
     // store numKeywords
     await client.SET(abbr+'numkeywords', keywords.size.toString());
 }
+
+// type = cookies, certs, keywords
+export async function storeData(untypedClient: any, urlAsString:string, type:string, dataset:Set<string>){
+    let client = <RedisClientType>untypedClient;
+    let urlBase:string = getUrlBase(urlAsString);
+    let abbr:string = getAbbr(urlBase);
+    var data:Set<string> = dataset;
+
+    setReferences(type, client, abbr, urlAsString);
+
+    // store in Redis
+    // create set of data
+    for(let d of data){
+        await client.SADD(abbr+type, d);
+    }
+
+    // store numData
+    await client.SET(abbr+'num'+type, data.size.toString());
+    
+
+}

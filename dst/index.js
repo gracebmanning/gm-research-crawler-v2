@@ -25,13 +25,6 @@ function main(url) {
             const puppeteer = require('puppeteer-extra');
             const StealthPlugin = require('puppeteer-extra-plugin-stealth');
             puppeteer.use(StealthPlugin());
-            /*const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha');
-            puppeteer.use(
-                RecaptchaPlugin({
-                    provider: { id: '2captcha', token: 'XXXXXXX' },
-                    visualFeedback: true
-                })
-            ) */
             const { executablePath } = require('puppeteer');
             const browser = yield puppeteer.launch({ headless: true, executablePath: executablePath() });
             const page = yield browser.newPage();
@@ -53,15 +46,18 @@ function main(url) {
                     seen.add(l);
                 }
             });
+            const content = yield page.content();
             // cookies
             const cookies = yield page.cookies();
-            (0, helpers_1.storeCookies)(client, cookies, url);
-            const content = yield page.content();
+            //storeCookies(client, cookies, url);
+            (0, helpers_1.storeData)(client, content, url, 'cookies', new Set(Array.from(cookies).map(c => JSON.stringify(c))));
             // certifications
-            (0, helpers_1.storeCertifications)(client, content, url);
+            //storeCertifications(client, content, url);
+            (0, helpers_1.storeData)(client, content, url, 'certs', (0, helpers_1.searchContent)('certs', content));
             // sustainability count
             // count num keywords / buzzwords
-            (0, helpers_1.storeKeywords)(client, content, url);
+            //storeKeywords(client, content, url);
+            (0, helpers_1.storeData)(client, content, url, 'keywords', (0, helpers_1.searchContent)('keywords', content));
             // categories
             // store set of unique categories
             // sizes
@@ -97,7 +93,7 @@ let run = () => __awaiter(void 0, void 0, void 0, function* () {
 const client = (0, redis_1.createClient)({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err) => console.log('Redis Client Error', err));
 var seeds = new Set(); // var seeds = new Set(sites); ...use sites array from siteData.ts file              
-seeds.add('https://chnge.com/'); // just one seed URL right now
+seeds.add('https://chnge.com'); // just one seed URL right now
 var queue = new Array(); // links to visit next
 var seen = new Set(); // unique seen links
 run();

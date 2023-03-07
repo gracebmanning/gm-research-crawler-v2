@@ -8,7 +8,7 @@ exports.abbreviations = new Map([
     ["https://www2.hm.com/en_us/index.html", "HM"],
     ["https://www.prettylittlething.us", "PLT"],
     ["https://bigbudpress.com", "BBP"],
-    ["https://www.sezane.com/us", "SZ"],
+    ["https://chnge.com", "CH"],
     ["https://www.fashionbrandcompany.com", "FBC"],
     ["https://shoptunnelvision.com", "TV"],
     ["https://igirlworld.com", "IG"],
@@ -20,7 +20,7 @@ exports.sites = [
     'https://www2.hm.com/en_us/index.html',
     'https://www.prettylittlething.us',
     'https://bigbudpress.com',
-    'https://www.sezane.com/us',
+    'https://chnge.com',
     'https://www.fashionbrandcompany.com',
     'https://shoptunnelvision.com',
     'https://igirlworld.com'
