@@ -5,7 +5,7 @@ export var abbreviations:Map<string, string> = new Map([
     ["https://www2.hm.com/en_us/index.html","HM"],
     ["https://www.prettylittlething.us","PLT"],
     ["https://bigbudpress.com","BBP"],
-    ["https://chnge.com","CH"],
+    ["https://chnge.com","CHNGE"],
     ["https://www.fashionbrandcompany.com","FBC"],
     ["https://shoptunnelvision.com","TV"],
     ["https://igirlworld.com","IG"],

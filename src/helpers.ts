@@ -24,7 +24,12 @@ export function validLinks(url:string, links:string[]):string[]{
     links.forEach( (l) => {
         if(l != '' && new URL(l).hostname == domain){
             let result = l.replace(/#[a-zA-Z]*/gm, "");
+            // remove slash at end of URL
             if(result.slice(-1) == "/"){
+                result = result.substring(0, result.length-1);
+            }
+            // remove exclamation points at end of URL
+            while(result.slice(-1) == "!"){
                 result = result.substring(0, result.length-1);
             }
             valid.push(result);

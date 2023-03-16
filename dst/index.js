@@ -73,6 +73,7 @@ function main(url) {
     });
 }
 let run = () => __awaiter(void 0, void 0, void 0, function* () {
+    let start = new Date().getTime(); // start timer
     yield client.connect(); // connect to Redis server
     for (const seedURL of seeds) {
         queue.push(seedURL);
@@ -82,9 +83,13 @@ let run = () => __awaiter(void 0, void 0, void 0, function* () {
                 yield main(url);
             }
             console.log(seen);
+            console.log(new Date().getTime() - start);
         }
     }
     yield client.disconnect(); // disconnect from Redis server
+    let end = new Date().getTime(); // stop timer
+    // calculate time  
+    console.log((end - start));
 });
 /**
  * EXECUTION BEGINS HERE

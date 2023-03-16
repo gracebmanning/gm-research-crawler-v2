@@ -33,7 +33,12 @@ function validLinks(url, links) {
     links.forEach((l) => {
         if (l != '' && new URL(l).hostname == domain) {
             let result = l.replace(/#[a-zA-Z]*/gm, "");
+            // remove slash at end of URL
             if (result.slice(-1) == "/") {
+                result = result.substring(0, result.length - 1);
+            }
+            // remove exclamation points at end of URL
+            while (result.slice(-1) == "!") {
                 result = result.substring(0, result.length - 1);
             }
             valid.push(result);
@@ -55,7 +60,6 @@ function setReferences(type, untypedClient, abbr, urlAsString) {
     return __awaiter(this, void 0, void 0, function* () {
         let client = untypedClient;
         // check if [type] key is already defined
-        console.log('abrr:' + abbr);
         let key1 = yield client.EXISTS(abbr + type);
         if (key1 == 0) {
             yield client.HSET(urlAsString, type, abbr + type); // store reference to set of cookies

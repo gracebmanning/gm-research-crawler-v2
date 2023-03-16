@@ -74,6 +74,7 @@ async function main(url:string) {
 }
 
 let run = async()=>{
+    let start = new Date().getTime(); // start timer
     await client.connect(); // connect to Redis server
 
     for(const seedURL of seeds){
@@ -84,9 +85,15 @@ let run = async()=>{
                 await main(url);
             }
             console.log(seen);
+            console.log(new Date().getTime() - start);
         }
     }
+
     await client.disconnect(); // disconnect from Redis server
+    let end = new Date().getTime(); // stop timer
+
+    // calculate time  
+    console.log((end - start));
 }
 
 
