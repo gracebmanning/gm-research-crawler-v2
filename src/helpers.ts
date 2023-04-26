@@ -1,5 +1,6 @@
 import { abbreviations, certsRegExp, keywordsRegExp } from './siteData';
 import { Protocol } from 'puppeteer';
+import { createHash } from 'node:crypto';
 import { RedisClientType } from '@redis/client';
 
 export function getAbbr(url:string):string{
@@ -36,6 +37,20 @@ export function validLinks(url:string, links:string[]):string[]{
         }
     });
     return valid;
+}
+
+export function exactSimilarity(keys:Set<string>, content:string):boolean{
+    const hash = createHash('sha1');
+    hash.update(content);
+    const key = hash.digest('hex');
+    console.log(key);
+    if(keys.has(key)){
+        return true;
+    }
+    else{
+        keys.add(key);
+        return false;
+    }
 }
 
 // used for collecting certifications and keywords

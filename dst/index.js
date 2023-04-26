@@ -47,24 +47,25 @@ function main(url) {
                 }
             });
             const content = yield page.content();
-            // cookies
-            const cookies = yield page.cookies();
-            //storeCookies(client, cookies, url);
-            (0, helpers_1.storeData)(client, url, 'cookies', new Set(Array.from(cookies).map(c => JSON.stringify(c))));
-            // certifications
-            //storeCertifications(client, content, url);
-            (0, helpers_1.storeData)(client, url, 'certs', (0, helpers_1.searchContent)('certs', content));
-            // sustainability count (count num keywords / buzzwords)
-            //storeKeywords(client, content, urls);
-            (0, helpers_1.storeData)(client, url, 'keywords', (0, helpers_1.searchContent)('keywords', content));
-            // categories
-            // store set of unique categories
-            // sizes
-            // store set of sizes seen on size (unique)
-            // count num sizes
-            // pages
-            // count number of pages found within the domain
-            // (use counter variable / set of unique seen links)
+            // exact similarity detection
+            const exact = (0, helpers_1.exactSimilarity)(shaKeys, content);
+            if (!exact) {
+                // cookies
+                const cookies = yield page.cookies();
+                (0, helpers_1.storeData)(client, url, 'cookies', new Set(Array.from(cookies).map(c => JSON.stringify(c))));
+                // certifications
+                (0, helpers_1.storeData)(client, url, 'certs', (0, helpers_1.searchContent)('certs', content));
+                // sustainability count (count num keywords / buzzwords)
+                (0, helpers_1.storeData)(client, url, 'keywords', (0, helpers_1.searchContent)('keywords', content));
+                // categories
+                // store set of unique categories
+                // sizes
+                // store set of sizes seen on size (unique)
+                // count num sizes
+                // pages
+                // count number of pages found within the domain
+                // (use counter variable / set of unique seen links)
+            }
             yield browser.close();
         }
         catch (e) {
@@ -100,4 +101,5 @@ var seeds = new Set(); // var seeds = new Set(sites); ...use sites array from si
 seeds.add('https://chnge.com'); // just one seed URL right now
 var queue = new Array(); // links to visit next
 var seen = new Set(); // unique seen links
+var shaKeys = new Set(); // SHA keys for exact similarity detection
 run();

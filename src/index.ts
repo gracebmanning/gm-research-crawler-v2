@@ -1,7 +1,8 @@
 //import puppeteer from 'puppeteer';
 //import puppeteer from 'puppeteer-extra-plugin-recaptcha';
 import { createClient } from 'redis';
-import { validLinks, storeData, searchContent } from './helpers';
+import { createHash } from 'node:crypto';
+import { validLinks, exactSimilarity, storeData, searchContent } from './helpers';
 
 /**
  * FUNCTION DEFINITIONS
@@ -44,28 +45,30 @@ async function main(url:string) {
         });
         
         const content = await page.content();
-        
-        // cookies
-        const cookies = await page.cookies();
-        //storeCookies(client, cookies, url);
-        storeData(client, url, 'cookies', new Set(Array.from(cookies).map(c => JSON.stringify(c))));
 
-        // certifications
-        //storeCertifications(client, content, url);
-        storeData(client, url, 'certs', searchContent('certs', content));
-        
-        // sustainability count (count num keywords / buzzwords)
-        //storeKeywords(client, content, urls);
-        storeData(client, url, 'keywords', searchContent('keywords', content));
+        // exact similarity detection
+        const exact = exactSimilarity(shaKeys, content);
+        if(!exact){
+            // cookies
+            const cookies = await page.cookies();
+            storeData(client, url, 'cookies', new Set(Array.from(cookies).map(c => JSON.stringify(c))));
 
-        // categories
-        // store set of unique categories
-        // sizes
-        // store set of sizes seen on size (unique)
-        // count num sizes
-        // pages
-        // count number of pages found within the domain
-        // (use counter variable / set of unique seen links)
+            // certifications
+            storeData(client, url, 'certs', searchContent('certs', content));
+            
+            // sustainability count (count num keywords / buzzwords)
+            storeData(client, url, 'keywords', searchContent('keywords', content));
+
+            // categories
+            // store set of unique categories
+            
+            // sizes
+            // store set of sizes seen on size (unique)
+            // count num sizes
+            // pages
+            // count number of pages found within the domain
+            // (use counter variable / set of unique seen links)
+        }
         await browser.close();
     }
     catch (e) {
@@ -108,5 +111,6 @@ seeds.add('https://chnge.com'); // just one seed URL right now
 
 var queue:Array<string> = new Array(); // links to visit next
 var seen:Set<string> = new Set(); // unique seen links
+var shaKeys:Set<string> = new Set(); // SHA keys for exact similarity detection
 
 run();

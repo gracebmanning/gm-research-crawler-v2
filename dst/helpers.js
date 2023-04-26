@@ -9,8 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.storeData = exports.storeKeywords = exports.storeCertifications = exports.storeCookies = exports.searchContent = exports.validLinks = exports.getUrlBase = exports.getAbbr = void 0;
+exports.storeData = exports.storeKeywords = exports.storeCertifications = exports.storeCookies = exports.searchContent = exports.exactSimilarity = exports.validLinks = exports.getUrlBase = exports.getAbbr = void 0;
 const siteData_1 = require("./siteData");
+const node_crypto_1 = require("node:crypto");
 function getAbbr(url) {
     let result = siteData_1.abbreviations.get(url);
     if (typeof (result) == "string") {
@@ -47,6 +48,20 @@ function validLinks(url, links) {
     return valid;
 }
 exports.validLinks = validLinks;
+function exactSimilarity(keys, content) {
+    const hash = (0, node_crypto_1.createHash)('sha1');
+    hash.update(content);
+    const key = hash.digest('hex');
+    console.log(key);
+    if (keys.has(key)) {
+        return true;
+    }
+    else {
+        keys.add(key);
+        return false;
+    }
+}
+exports.exactSimilarity = exactSimilarity;
 // used for collecting certifications and keywords
 function searchContent(type, content) {
     var _a;
