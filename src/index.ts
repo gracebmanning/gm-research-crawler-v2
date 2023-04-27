@@ -1,7 +1,6 @@
 //import puppeteer from 'puppeteer';
 //import puppeteer from 'puppeteer-extra-plugin-recaptcha';
 import { createClient } from 'redis';
-import { createHash } from 'node:crypto';
 import { validLinks, exactSimilarity, storeData, searchContent } from './helpers';
 
 /**
@@ -25,7 +24,6 @@ async function main(url:string) {
 
         await page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
         await delay(1000, 2000); // emulates human behavior
-        // await page.solveRecaptchas();
 
         const links = await page.evaluate(() => {
             const anchors = document.getElementsByTagName('a');

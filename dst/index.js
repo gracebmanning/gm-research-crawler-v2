@@ -31,7 +31,6 @@ function main(url) {
             yield page.setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 13_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/110.0.0.0 Mobile/15E148 Safari/604.1');
             yield page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
             yield delay(1000, 2000); // emulates human behavior
-            // await page.solveRecaptchas();
             const links = yield page.evaluate(() => {
                 const anchors = document.getElementsByTagName('a');
                 return Array.from(anchors).map(a => a.href);

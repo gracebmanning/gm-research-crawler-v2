@@ -2,6 +2,7 @@ import { abbreviations, certsRegExp, keywordsRegExp } from './siteData';
 import { Protocol } from 'puppeteer';
 import { createHash } from 'node:crypto';
 import { RedisClientType } from '@redis/client';
+var JSSoup = require('jssoup').default;
 
 export function getAbbr(url:string):string{
     let result = abbreviations.get(url);
@@ -40,10 +41,12 @@ export function validLinks(url:string, links:string[]):string[]{
 }
 
 export function exactSimilarity(keys:Set<string>, content:string):boolean{
+    var body = new JSSoup(content).find('body').text; // get body content as string
+
     const hash = createHash('sha1');
-    hash.update(content);
+    hash.update(body);
     const key = hash.digest('hex');
-    console.log(key);
+
     if(keys.has(key)){
         return true;
     }

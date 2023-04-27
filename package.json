@@ -9,6 +9,7 @@
   "author": "gracebmanning",
   "license": "ISC",
   "dependencies": {
+    "jssoup": "^0.0.15",
     "puppeteer": "^19.7.2",
     "puppeteer-extra": "^3.3.4",
     "puppeteer-extra-plugin-recaptcha": "^3.6.6",
