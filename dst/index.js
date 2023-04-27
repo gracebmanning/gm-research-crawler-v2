@@ -83,13 +83,13 @@ let run = () => __awaiter(void 0, void 0, void 0, function* () {
                 yield main(url);
             }
             console.log(seen);
-            console.log(new Date().getTime() - start);
+            console.log(((new Date().getTime() - start) / 1000).toString() + ' seconds');
         }
     }
     yield client.disconnect(); // disconnect from Redis server
     let end = new Date().getTime(); // stop timer
     // calculate time  
-    console.log((end - start));
+    console.log(((end - start) / 1000).toString() + ' seconds');
 });
 /**
  * EXECUTION BEGINS HERE

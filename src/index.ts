@@ -86,7 +86,7 @@ let run = async()=>{
                 await main(url);
             }
             console.log(seen);
-            console.log(new Date().getTime() - start);
+            console.log(((new Date().getTime() - start)/1000).toString() + ' seconds');
         }
     }
 
@@ -94,7 +94,7 @@ let run = async()=>{
     let end = new Date().getTime(); // stop timer
 
     // calculate time  
-    console.log((end - start));
+    console.log('TOTAL: ' + ((end - start)/1000).toString() + ' seconds');
 }
 
 

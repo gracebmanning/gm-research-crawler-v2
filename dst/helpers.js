@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.storeData = exports.storeKeywords = exports.storeCertifications = exports.storeCookies = exports.searchContent = exports.exactSimilarity = exports.validLinks = exports.getUrlBase = exports.getAbbr = void 0;
 const siteData_1 = require("./siteData");
 const node_crypto_1 = require("node:crypto");
+var JSSoup = require('jssoup').default;
 function getAbbr(url) {
     let result = siteData_1.abbreviations.get(url);
     if (typeof (result) == "string") {
@@ -49,10 +50,10 @@ function validLinks(url, links) {
 }
 exports.validLinks = validLinks;
 function exactSimilarity(keys, content) {
+    var body = new JSSoup(content).find('body').text; // get body content as string
     const hash = (0, node_crypto_1.createHash)('sha1');
-    hash.update(content);
+    hash.update(body);
     const key = hash.digest('hex');
-    console.log(key);
     if (keys.has(key)) {
         return true;
     }
