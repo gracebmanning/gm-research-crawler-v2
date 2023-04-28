@@ -1,0 +1,348 @@
+SEARCHING...
+				$(document).ready(function() {
+					$( '#search_input_mobile' ).autocomplete({
+						source: function( request, response ) {
+							$.ajax({
+								url: "http://chnge.com/search",
+								data: {
+									q: "*" + request.term + "*",
+									type: $('#search_type_desktop').val(),// No type on mobile - no switch present
+									view: "json",
+								},
+								dataType: "json",
+								success: function( data ) {
+									response(data);
+								}
+							});
+						},
+						minLength: 2,
+						response: function(event, ui) {
+							$(".search_results_list_mobile").empty();
+						},
+						select: function( event, ui ) {
+							window.location = ui.item.url;
+						},
+					}).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+							console.log("Adding list element");
+
+							if (item.price) {
+								price = formatMoney(item.price);
+							}
+							else {
+								price = '&nbsp;';
+							}
+
+							soldout_class = item.available ? "" : "product__soldout";
+
+							if (item.original_price) {
+								original_price = formatMoney(item.original_price);
+							}
+							else {
+								original_price = null;
+							}
+
+							if (original_price) {
+								price_element = `
+									<span class="original_price"><span class=""> ` + original_price + `</span></span>
+									<span class="current_price sale"><span class=""> ` + price + `</span></span>
+								`
+							} else {
+								price_element = `
+									<span class="current_price"><span class=""> ` + price + `</span></span>
+								`
+							}
+
+							html_element = `
+								<a href="` + item.url + `" class="card--mod">
+									<div class="card__cover">
+										<img src="` + item.thumb + `" alt="">
+									</div>
+									<div class="card__body">
+										<h3 class="card__title">` + item.label + `</h3>
+										<span class="card__price ` + soldout_class + `">` + price_element + `</span>
+									</div>
+								</a>
+							`;
+							return $( html_element ).appendTo( $(".search_results_list_mobile") );
+						};
+				});
+				CategoriesAllNew ArrivalsBest SellingGraphic TeesTanksBaby TeesLong SleevesClassic SweatsGraphic SweatsBottomsCrop TopsT-Shirt DressesHatsAccessoriesKids TeesSaleGift CardsCollectionsCollectionsZero WasteReproductive RightsMental Health AwarenessCannabis EquityWomen Don't Owe You ShitBLMSay No To WarTrans JoyMindful DyesiScreamColour x CHNGETerrestrial Tones VoL. 1Self LovePurposePurposeFactoryFabricSustainabilityDonationsVibesVibesYearbookCampaignsCHNGE™ MakersCHNGE.TVLoginMy AccountAbout UsHelpSearchALLPRODUCTCONTENTBlack Trans Lives Matter Long Sleeve $44
+				// Disable search forms (both desktop and mobile) submit on Enter
+				$('.search_form input').keydown(function (e) {
+				    if (e.keyCode == 13) {
+				        e.preventDefault();
+				        return false;
+				    }
+				});
+
+				// Set up search autocomplete function
+				$(document).ready(function() {
+					$( '#search_input_desktop' ).autocomplete({
+						source: function( request, response ) {
+							$.ajax({
+								url: "http://chnge.com/search",
+								data: {
+									q: "*" + request.term + "*",
+									type: $('#search_type_desktop').val(),
+									view: "json",
+								},
+								dataType: "json",
+								success: function( data ) {
+									response(data);
+								}
+							});
+						},
+						minLength: 1,
+						response: function(event, ui) {
+							$(".search_results_list").empty();
+						},
+						select: function( event, ui ) {
+							window.location = ui.item.url;
+						},
+					}).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+							console.log("Adding list element");
+
+							if (item.price) {
+								price = formatMoney(item.price);
+							}
+							else {
+								price = '&nbsp;';
+							}
+
+							soldout_class = item.available ? "" : "product__soldout";
+
+							if (item.original_price) {
+								original_price = formatMoney(item.original_price);
+							}
+							else {
+								original_price = null;
+							}
+
+							if (original_price) {
+								price_element = `
+									<span class="original_price"><span class=""> ` + original_price + `</span></span>
+									<span class="current_price sale"><span class=""> ` + price + `</span></span>
+								`
+							} else {
+								price_element = `
+									<span class="current_price"><span class=""> ` + price + `</span></span>
+								`
+							}
+
+							html_element = `
+								<a href="` + item.url + `" class="card--mod">
+									<div class="card__cover">
+										<img src="` + item.thumb + `" alt="">
+									</div>
+									<div class="card__body">
+										<h3 class="card__title">` + item.label + `</h3>
+										<span class="card__price ` + soldout_class + `">` + price_element + `</span>
+									</div>
+								</a>
+							`;
+							return $( html_element ).appendTo( $(".search_results_list") );
+				    };
+				});
+
+				// Set up and perform onload search (initial - to not show empty search)
+				$(document).ready(function() {
+					$.ajax({
+						url: "http://chnge.com/search",
+						data: {
+							q: "*Black Lives Matter*",
+							type: $('#search_type_desktop').val(),
+							view: "json",
+						},
+						dataType: "json",
+						success: function( data ) {
+							for (let x=0; x<data.length; x++) {
+								if (data[x].price) {
+									price = formatMoney(data[x].price);
+								}
+								else {
+									price = '&nbsp;';
+								}
+
+								soldout_class = data[x].available ? "" : "product__soldout";
+
+								if (data[x].original_price) {
+									original_price = formatMoney(data[x].original_price);
+								}
+								else {
+									original_price = null;
+								}
+
+								if (original_price) {
+									price_element = `
+										<span class="original_price"><span class=""> ` + original_price + `</span></span>
+										<span class="current_price sale"><span class=""> ` + price + `</span></span>
+									`
+								} else {
+									price_element = `
+										<span class="current_price"><span class=""> ` + price + `</span></span>
+									`
+								}
+
+								html_element = `
+									<a href="` + data[x].url + `" class="card--mod">
+										<div class="card__cover">
+											<img src="` + data[x].thumb + `" alt="">
+										</div>
+										<div class="card__body">
+											<h3 class="card__title">` + data[x].label + `</h3>
+											<span class="card__price ` + soldout_class + `">` + price_element + `</span>
+										</div>
+									</a>
+								`;
+								$( html_element ).appendTo( $(".search_results_list") );
+							}
+
+						}
+					});
+				});
+				AccountBAG0150
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@600&display=swap');
+
+.bag__header {
+  flex-direction: column;
+}
+
+.bag__header .top {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  text-transform: uppercase;
+  font-family: "Heebo";
+  font-weight: bold;
+  font-size: 11px; /* was 12px */
+  letter-spacing: 0.3px;
+/*  letter-spacing: 0.55px; */
+/*line-height: 22px; */
+}
+
+.bag__header .bag__close {
+  margin-bottom: 10px;
+}
+
+.bag__header .greenlight {
+  color: #c0ff1d;
+}
+
+.bag__header .progressbar_background {
+  background-color: #ffffff;
+  width: 100%;
+}
+
+.bag__header .progressbar_foreground {
+  height: 5px;
+  /* width: 25%; */
+  background-color: #c0ff1d;
+
+  -webkit-transition: width 1s ease-in-out;
+  -moz-transition: width 1s ease-in-out;
+  -o-transition: width 1s ease-in-out;
+  transition: width 1s ease-in-out;
+}
+
+You need $150 more to unlock free shipping 🔒Free shipping unlocked for this order 🔓Your cart is currently empty
+                Shipping &amp; taxes calculated at checkout    SUBTOTAL$0CheckoutContinue Shopping
+$.getJSON('https://reallyfreegeoip.org/json/', function(data){
+    if(data['country_code'] == "US") {
+      $('#no_free_shipping_bag').hide();
+      $('#free_shipping_bag').show();
+    }
+    else {
+      /* predefined - no free shipping graphics */
+    }
+});
+
+  <div class="flag flag--sm">
+      <img src="//cdn.shopify.com/shopifycloud/shopify/assets/no-image-2048-5e88c1b20e087fb7bbe9a3771824e743c244f437e4f8ba93bbf7b11b53f7824c_x190.gif" alt="" class="flag__img">
+      <div class="flag__content">
+
+      
+      <strong class="flag__price"></strong>
+
+
+      <h4 class="flag__title upper"></h4>
+
+
+      </div>
+      <div class="flag__qty qty">
+        <input type="number" min="0" max="10" step="1" value="" class="form-control qty__input" disabled="" data-quantity-item="" data-item-id="">
+      </div>
+  </div>
+
+  <dl class="flag__attribute flag__size">
+    <dt class="upper"></dt>
+    <dd class="upper"></dd>
+  </dl>
+
+  <p style="text-align: center;">Your cart is currently empty</p>
+
+ #AjaxifyCart .additional-checkout-buttons, #ajaxifyCart .additional-checkout-buttons {
+    display:none;
+}
+404 Page Not FoundThe page you requested does not exist.Continue shoppingAccountAboutActivismSustainabilityFabricsSubmissionsFactoriesNewsThreadsYearbookHelpFAQSShipping &amp; ReturnsTerms of ServicesContact usMy AccountPrivacy &amp; Cookies© 2021 CHNGE. ALL RIGHTS RESERVEDSITE BY:someone &amp; others
+	$(function(){
+	    $('#footer-newsletter-form button').click(function(){
+	        $('#footer-newsletter-form .error_message').html('');
+	    });
+
+	    KlaviyoSubscribe.attachToForms('#footer-newsletter-form', {
+	      hide_form_on_success: true,
+	      extra_properties: {
+	        $source: "Website footer form",
+	        $method_type: "Form",
+	        $method_id: "form",
+	        $consent_version: 'Consent'
+	      },
+	      success: function(form){
+	        $('#footer-newsletter-form .success_message').show();
+	        Cookies.set('newsletter_form', 'footer');
+	      },
+	      failure: function(form){
+	        console.log(form);
+	      }
+	    });
+	});
+	Choosing a selection results in a full page refresh.Press the space key then arrow keys to make a selection.
+  
+window.addEventListener("load", () => {  
+      let size = "sm"; // xs, sm, md, lg
+      let showUpperLimit = "false";
+      let badgeTheme = "black-on-white";
+      let isEligible = true;
+      let locale = "en_US";
+      let currency = "USD";
+                          
+                                           
+  });
+
+  @media screen and (max-width:770px){ 
+     afterpay-placement {
+    
+     }
+  }
+  @media screen and (min-width:771px){
+     afterpay-placement {
+    
+     }
+  }
+  afterpay-placement {
+/*     --logo-badge-width: 100px; */
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+window.addEventListener("pageshow",function(t){(t.persisted||void 0!==window.performance&&2===window.performance.navigation.type)&&Shopify.getCart(function(t){let e={},a={},o=!1;for(var n=0;n<t.items.length;n++)"true"===(a=t.items[n]).properties.__isOtoProduct__&&(o=!0,e[a.id]=a.quantity-1);if(o){let t=new FormData;const a=localStorage.getItem("OTO.Checkout.token"),o=localStorage.getItem("OTO.location.pathname");t.append("_method","patch"),t.append("authenticity_token",a),t.append("checkout[clear_discount]",1),$.ajax({type:"POST",url:o,data:t,cache:!1,processData:!1,contentType:!1,success:function(t){$.ajax({type:"POST",url:"/cart/update.js",data:{updates:e},dataType:"json",cache:!1,success:function(t){location.reload()}})},error:function(t,e,a){}})}})});
+  window._mfq = window._mfq || [];
+  (function() {
+    var mf = document.createElement("script");
+    mf.type = "text/javascript"; mf.defer = true;
+    mf.src = "//cdn.mouseflow.com/projects/c2d7f722-9cea-4a9f-a44a-118d770d71dc.js";
+    document.getElementsByTagName("head")[0].appendChild(mf);
+  })();
+
+  catchjs.init("pSrqBN3ZOKroT9SCHW9nX8c4", {theme: "dark-mono"});
+  Opens in a new window.Opens external website.Opens external website in a new window.

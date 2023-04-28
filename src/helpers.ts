@@ -42,11 +42,9 @@ export function validLinks(url:string, links:string[]):string[]{
 
 export function exactSimilarity(keys:Set<string>, content:string):boolean{
     var body = new JSSoup(content).find('body').text; // get body content as string
-
     const hash = createHash('sha1');
     hash.update(body);
     const key = hash.digest('hex');
-
     if(keys.has(key)){
         return true;
     }
@@ -63,6 +61,14 @@ export function searchContent(type:string, content:string):Set<string>{
     return new Set(matches);
 }
 
+export function getCategories(url:string):Set<string>{
+    if(url == 'https://chnge.com'){
+        // document.getElementsByClassName('menu-grid')[0]
+    }
+    // other sites
+    return new Set();
+}
+
 // used to set hash references for a url
 async function setReferences(type:string, untypedClient:any, abbr:string, urlAsString:string){
     let client = <RedisClientType>untypedClient;
@@ -72,11 +78,47 @@ async function setReferences(type:string, untypedClient:any, abbr:string, urlAsS
         await client.HSET(urlAsString, type, abbr+type); // store reference to set of cookies
     }
     // check if num[type] key is already defined
-    let key2 = await client.EXISTS(abbr+'num'+type)
+    let key2 = await client.EXISTS(abbr+'num'+type);
     if(key2 == 0){
         await client.HSET(urlAsString, 'num'+type, abbr+'num'+type); // store reference to numCookies
     }
 }
+
+// type = cookies, certs, keywords
+export async function storeData(untypedClient: any, urlAsString:string, type:string, dataset:Set<string>){
+    let client = <RedisClientType>untypedClient;
+    let urlBase:string = getUrlBase(urlAsString);
+    let abbr:string = getAbbr(urlBase);
+    var data:Set<string> = dataset;
+
+    setReferences(type, client, abbr, urlAsString);
+
+    // store in Redis
+    // create set of data
+    for(let d of data){
+        await client.SADD(abbr+type, d);
+    }
+
+    // store numData
+    await client.SET(abbr+'num'+type, data.size.toString());
+}
+
+export async function storeNumPages(untypedClient: any, urlAsString:string, dataset:Set<string>){
+    let client = <RedisClientType>untypedClient;
+    let urlBase:string = getUrlBase(urlAsString);
+    let abbr:string = getAbbr(urlBase);
+    var data:Set<string> = dataset;
+
+    let key2 = await client.EXISTS(abbr+'numpages');
+    if(key2 == 0){
+        await client.HSET(urlAsString, 'numpages', abbr+'numpages'); // store reference to numpages
+    }
+
+    // store numpages
+    await client.SET(abbr+'numpages', data.size.toString());
+}
+
+/*
 
 export async function storeCookies(untypedClient:any, cookiesList:Protocol.Network.Cookie[], urlAsString:string){
     let client = <RedisClientType>untypedClient;
@@ -132,23 +174,4 @@ export async function storeKeywords(untypedClient:any, content:string, urlAsStri
     await client.SET(abbr+'numkeywords', keywords.size.toString());
 }
 
-// type = cookies, certs, keywords
-export async function storeData(untypedClient: any, urlAsString:string, type:string, dataset:Set<string>){
-    let client = <RedisClientType>untypedClient;
-    let urlBase:string = getUrlBase(urlAsString);
-    let abbr:string = getAbbr(urlBase);
-    var data:Set<string> = dataset;
-
-    setReferences(type, client, abbr, urlAsString);
-
-    // store in Redis
-    // create set of data
-    for(let d of data){
-        await client.SADD(abbr+type, d);
-    }
-
-    // store numData
-    await client.SET(abbr+'num'+type, data.size.toString());
-    
-
-}
+*/

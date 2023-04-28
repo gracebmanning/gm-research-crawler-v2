@@ -1,7 +1,7 @@
 //import puppeteer from 'puppeteer';
 //import puppeteer from 'puppeteer-extra-plugin-recaptcha';
 import { createClient } from 'redis';
-import { validLinks, exactSimilarity, storeData, searchContent } from './helpers';
+import { validLinks, exactSimilarity, storeData, searchContent, getCategories, storeNumPages } from './helpers';
 
 /**
  * FUNCTION DEFINITIONS
@@ -24,29 +24,30 @@ async function main(url:string) {
 
         await page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
         await delay(1000, 2000); // emulates human behavior
-
+        
         const links = await page.evaluate(() => {
             const anchors = document.getElementsByTagName('a');
             return Array.from(anchors).map(a => a.href);
         });
-
+        
         // add URL to seen links
         seen.add(url);
 
-        // get valid links, add to queue (and seen set) if not seen 
-        let valid = validLinks(url, links);
-        valid.forEach((l) => {
-            if(!seen.has(l)){
-                queue.push(l);
-                seen.add(l);
-            }
-        });
-        
         const content = await page.content();
 
         // exact similarity detection
         const exact = exactSimilarity(shaKeys, content);
         if(!exact){
+
+            // get valid links, add to queue (and seen set) if not seen 
+            let valid = validLinks(url, links);
+            valid.forEach((l) => {
+                if(!seen.has(l)){
+                    queue.push(l);
+                    seen.add(l);
+                }
+            });
+        
             // cookies
             const cookies = await page.cookies();
             storeData(client, url, 'cookies', new Set(Array.from(cookies).map(c => JSON.stringify(c))));
@@ -58,14 +59,10 @@ async function main(url:string) {
             storeData(client, url, 'keywords', searchContent('keywords', content));
 
             // categories
-            // store set of unique categories
+            //storeData(client, url, 'categories', categories);
             
             // sizes
             // store set of sizes seen on size (unique)
-            // count num sizes
-            // pages
-            // count number of pages found within the domain
-            // (use counter variable / set of unique seen links)
         }
         await browser.close();
     }
@@ -88,6 +85,8 @@ let run = async()=>{
             console.log(seen);
             console.log(((new Date().getTime() - start)/1000).toString() + ' seconds');
         }
+        storeNumPages(client, seedURL, seen); // stores number of pages for url
+        seen.clear(); // seen is empty for next seedURL
     }
 
     await client.disconnect(); // disconnect from Redis server

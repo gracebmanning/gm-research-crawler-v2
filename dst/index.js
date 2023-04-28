@@ -37,18 +37,18 @@ function main(url) {
             });
             // add URL to seen links
             seen.add(url);
-            // get valid links, add to queue (and seen set) if not seen 
-            let valid = (0, helpers_1.validLinks)(url, links);
-            valid.forEach((l) => {
-                if (!seen.has(l)) {
-                    queue.push(l);
-                    seen.add(l);
-                }
-            });
             const content = yield page.content();
             // exact similarity detection
             const exact = (0, helpers_1.exactSimilarity)(shaKeys, content);
             if (!exact) {
+                // get valid links, add to queue (and seen set) if not seen 
+                let valid = (0, helpers_1.validLinks)(url, links);
+                valid.forEach((l) => {
+                    if (!seen.has(l)) {
+                        queue.push(l);
+                        seen.add(l);
+                    }
+                });
                 // cookies
                 const cookies = yield page.cookies();
                 (0, helpers_1.storeData)(client, url, 'cookies', new Set(Array.from(cookies).map(c => JSON.stringify(c))));
@@ -57,13 +57,9 @@ function main(url) {
                 // sustainability count (count num keywords / buzzwords)
                 (0, helpers_1.storeData)(client, url, 'keywords', (0, helpers_1.searchContent)('keywords', content));
                 // categories
-                // store set of unique categories
+                //storeData(client, url, 'categories', categories);
                 // sizes
                 // store set of sizes seen on size (unique)
-                // count num sizes
-                // pages
-                // count number of pages found within the domain
-                // (use counter variable / set of unique seen links)
             }
             yield browser.close();
         }
@@ -85,11 +81,13 @@ let run = () => __awaiter(void 0, void 0, void 0, function* () {
             console.log(seen);
             console.log(((new Date().getTime() - start) / 1000).toString() + ' seconds');
         }
+        (0, helpers_1.storeNumPages)(client, seedURL, seen); // stores number of pages for url
+        seen.clear(); // seen is empty for next seedURL
     }
     yield client.disconnect(); // disconnect from Redis server
     let end = new Date().getTime(); // stop timer
     // calculate time  
-    console.log(((end - start) / 1000).toString() + ' seconds');
+    console.log('TOTAL: ' + ((end - start) / 1000).toString() + ' seconds');
 });
 /**
  * EXECUTION BEGINS HERE

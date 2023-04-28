@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.storeData = exports.storeKeywords = exports.storeCertifications = exports.storeCookies = exports.searchContent = exports.exactSimilarity = exports.validLinks = exports.getUrlBase = exports.getAbbr = void 0;
+exports.storeNumPages = exports.storeData = exports.getCategories = exports.searchContent = exports.exactSimilarity = exports.validLinks = exports.getUrlBase = exports.getAbbr = void 0;
 const siteData_1 = require("./siteData");
 const node_crypto_1 = require("node:crypto");
 var JSSoup = require('jssoup').default;
@@ -71,6 +71,14 @@ function searchContent(type, content) {
     return new Set(matches);
 }
 exports.searchContent = searchContent;
+function getCategories(url) {
+    if (url == 'https://chnge.com') {
+        // document.getElementsByClassName('menu-grid')[0]
+    }
+    // other sites
+    return new Set();
+}
+exports.getCategories = getCategories;
 // used to set hash references for a url
 function setReferences(type, untypedClient, abbr, urlAsString) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -87,56 +95,6 @@ function setReferences(type, untypedClient, abbr, urlAsString) {
         }
     });
 }
-function storeCookies(untypedClient, cookiesList, urlAsString) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let client = untypedClient;
-        let urlBase = getUrlBase(urlAsString);
-        let abbr = getAbbr(urlBase);
-        const cookies = new Set(Array.from(cookiesList).map(c => JSON.stringify(c)));
-        setReferences('cookies', client, abbr, urlAsString);
-        // store set of cookies
-        for (let c of cookies) {
-            yield client.SADD(abbr + 'cookies', c);
-        }
-        // store numCookies
-        yield client.SET(abbr + 'numcookies', cookies.size.toString());
-    });
-}
-exports.storeCookies = storeCookies;
-function storeCertifications(untypedClient, content, urlAsString) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let client = untypedClient;
-        let urlBase = getUrlBase(urlAsString);
-        let abbr = getAbbr(urlBase);
-        var certs = searchContent('certs', content);
-        setReferences('certs', client, abbr, urlAsString);
-        // store in Redis
-        // create set of certs
-        for (let c of certs) {
-            yield client.SADD(abbr + 'certs', c);
-        }
-        // store numCerts
-        yield client.SET(abbr + 'numcerts', certs.size.toString());
-    });
-}
-exports.storeCertifications = storeCertifications;
-function storeKeywords(untypedClient, content, urlAsString) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let client = untypedClient;
-        let urlBase = getUrlBase(urlAsString);
-        let abbr = getAbbr(urlBase);
-        var keywords = searchContent('keywords', content);
-        setReferences('keywords', client, abbr, urlAsString);
-        // store in Redis
-        // create set of keywords
-        for (let k of keywords) {
-            yield client.SADD(abbr + 'keywords', k);
-        }
-        // store numKeywords
-        yield client.SET(abbr + 'numkeywords', keywords.size.toString());
-    });
-}
-exports.storeKeywords = storeKeywords;
 // type = cookies, certs, keywords
 function storeData(untypedClient, urlAsString, type, dataset) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -155,3 +113,75 @@ function storeData(untypedClient, urlAsString, type, dataset) {
     });
 }
 exports.storeData = storeData;
+function storeNumPages(untypedClient, urlAsString, dataset) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let client = untypedClient;
+        let urlBase = getUrlBase(urlAsString);
+        let abbr = getAbbr(urlBase);
+        var data = dataset;
+        let key2 = yield client.EXISTS(abbr + 'numpages');
+        if (key2 == 0) {
+            yield client.HSET(urlAsString, 'numpages', abbr + 'numpages'); // store reference to numpages
+        }
+        // store numpages
+        yield client.SET(abbr + 'numpages', data.size.toString());
+    });
+}
+exports.storeNumPages = storeNumPages;
+/*
+
+export async function storeCookies(untypedClient:any, cookiesList:Protocol.Network.Cookie[], urlAsString:string){
+    let client = <RedisClientType>untypedClient;
+    let urlBase:string = getUrlBase(urlAsString);
+    let abbr:string = getAbbr(urlBase);
+    const cookies:Set<string> = new Set(Array.from(cookiesList).map(c => JSON.stringify(c)));
+
+    setReferences('cookies', client, abbr, urlAsString);
+    
+    // store set of cookies
+    for(let c of cookies){
+        await client.SADD(abbr+'cookies', c);
+    }
+
+    // store numCookies
+    await client.SET(abbr+'numcookies', cookies.size.toString());
+}
+
+
+export async function storeCertifications(untypedClient:any, content:string, urlAsString:string){
+    let client = <RedisClientType>untypedClient;
+    let urlBase:string = getUrlBase(urlAsString);
+    let abbr:string = getAbbr(urlBase);
+    var certs:Set<string> = searchContent('certs', content);
+
+    setReferences('certs', client, abbr, urlAsString);
+
+    // store in Redis
+    // create set of certs
+    for(let c of certs){
+        await client.SADD(abbr+'certs', c);
+    }
+
+    // store numCerts
+    await client.SET(abbr+'numcerts', certs.size.toString());
+}
+
+export async function storeKeywords(untypedClient:any, content:string, urlAsString:string){
+    let client = <RedisClientType>untypedClient;
+    let urlBase:string = getUrlBase(urlAsString);
+    let abbr:string = getAbbr(urlBase);
+    var keywords:Set<string> = searchContent('keywords', content);
+
+    setReferences('keywords', client, abbr, urlAsString);
+
+    // store in Redis
+    // create set of keywords
+    for(let k of keywords){
+        await client.SADD(abbr+'keywords', k);
+    }
+
+    // store numKeywords
+    await client.SET(abbr+'numkeywords', keywords.size.toString());
+}
+
+*/ 
