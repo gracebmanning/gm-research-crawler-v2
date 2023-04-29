@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //import puppeteer from 'puppeteer-extra-plugin-recaptcha';
 const redis_1 = require("redis");
 const helpers_1 = require("./helpers");
+const siteData_1 = require("./siteData");
 /**
  * FUNCTION DEFINITIONS
  */
@@ -78,7 +79,7 @@ let run = () => __awaiter(void 0, void 0, void 0, function* () {
             if (url != undefined) {
                 yield main(url);
             }
-            //console.log(seen);
+            console.log(seen);
             console.log(((new Date().getTime() - start) / 1000).toString() + ' seconds');
         }
         (0, helpers_1.storeNumPages)(client, seedURL, seen); // stores number of pages for url
@@ -94,8 +95,8 @@ let run = () => __awaiter(void 0, void 0, void 0, function* () {
  */
 const client = (0, redis_1.createClient)({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err) => console.log('Redis Client Error', err));
-var seeds = new Set(); // use sites array from siteData.ts file              
-seeds.add('https://www.forever21.com'); // just one seed URL right now
+var seeds = new Set(siteData_1.sites); // use sites array from siteData.ts file              
+//seeds.add('https://www.forever21.com'); // just one seed URL right now
 var queue = new Array(); // links to visit next
 var seen = new Set(); // unique seen links
 var shaKeys = new Set(); // SHA keys for exact similarity detection
