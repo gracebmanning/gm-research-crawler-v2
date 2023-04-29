@@ -72,15 +72,16 @@ export function getCategories(url:string):Set<string>{
 // used to set hash references for a url
 async function setReferences(type:string, untypedClient:any, abbr:string, urlAsString:string){
     let client = <RedisClientType>untypedClient;
+    let urlBase:string = getUrlBase(urlAsString);
     // check if [type] key is already defined
     let key1 = await client.EXISTS(abbr+type);
     if(key1 == 0){
-        await client.HSET(urlAsString, type, abbr+type); // store reference to set of cookies
+        await client.HSET(urlBase, type, abbr+type); // store reference to set of cookies
     }
     // check if num[type] key is already defined
     let key2 = await client.EXISTS(abbr+'num'+type);
     if(key2 == 0){
-        await client.HSET(urlAsString, 'num'+type, abbr+'num'+type); // store reference to numCookies
+        await client.HSET(urlBase, 'num'+type, abbr+'num'+type); // store reference to numCookies
     }
 }
 
