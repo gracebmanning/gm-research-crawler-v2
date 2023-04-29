@@ -83,16 +83,16 @@ exports.getCategories = getCategories;
 function setReferences(type, untypedClient, abbr, urlAsString) {
     return __awaiter(this, void 0, void 0, function* () {
         let client = untypedClient;
-        let urlBase = getUrlBase(urlAsString);
         // check if [type] key is already defined
         let key1 = yield client.EXISTS(abbr + type);
         if (key1 == 0) {
-            yield client.HSET(urlBase, type, abbr + type); // store reference to set of cookies
+            console.log('calling HSET. urlAsString: ' + urlAsString + ', ' + abbr + type);
+            yield client.HSET(urlAsString, type, abbr + type); // store reference to set of cookies
         }
         // check if num[type] key is already defined
         let key2 = yield client.EXISTS(abbr + 'num' + type);
         if (key2 == 0) {
-            yield client.HSET(urlBase, 'num' + type, abbr + 'num' + type); // store reference to numCookies
+            yield client.HSET(urlAsString, 'num' + type, abbr + 'num' + type); // store reference to numCookies
         }
     });
 }
@@ -103,7 +103,8 @@ function storeData(untypedClient, urlAsString, type, dataset) {
         let urlBase = getUrlBase(urlAsString);
         let abbr = getAbbr(urlBase);
         var data = dataset;
-        setReferences(type, client, abbr, urlAsString);
+        //console.log('calling set references. urlbase: ' + urlBase + ', abbr: ' + abbr);
+        //setReferences(type, client, abbr, urlAsString);
         // store in Redis
         // create set of data
         for (let d of data) {

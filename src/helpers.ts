@@ -69,22 +69,6 @@ export function getCategories(url:string):Set<string>{
     return new Set();
 }
 
-// used to set hash references for a url
-async function setReferences(type:string, untypedClient:any, abbr:string, urlAsString:string){
-    let client = <RedisClientType>untypedClient;
-    let urlBase:string = getUrlBase(urlAsString);
-    // check if [type] key is already defined
-    let key1 = await client.EXISTS(abbr+type);
-    if(key1 == 0){
-        await client.HSET(urlBase, type, abbr+type); // store reference to set of cookies
-    }
-    // check if num[type] key is already defined
-    let key2 = await client.EXISTS(abbr+'num'+type);
-    if(key2 == 0){
-        await client.HSET(urlBase, 'num'+type, abbr+'num'+type); // store reference to numCookies
-    }
-}
-
 // type = cookies, certs, keywords
 export async function storeData(untypedClient: any, urlAsString:string, type:string, dataset:Set<string>){
     let client = <RedisClientType>untypedClient;
@@ -92,14 +76,11 @@ export async function storeData(untypedClient: any, urlAsString:string, type:str
     let abbr:string = getAbbr(urlBase);
     var data:Set<string> = dataset;
 
-    setReferences(type, client, abbr, urlAsString);
-
     // store in Redis
     // create set of data
     for(let d of data){
         await client.SADD(abbr+type, d);
     }
-
     // store numData
     await client.SET(abbr+'num'+type, data.size.toString());
 }
@@ -120,6 +101,23 @@ export async function storeNumPages(untypedClient: any, urlAsString:string, data
 }
 
 /*
+
+// used to set hash references for a url
+async function setReferences(type:string, untypedClient:any, abbr:string, urlAsString:string){
+    let client = <RedisClientType>untypedClient;
+    // check if [type] key is already defined
+    let key1 = await client.EXISTS(abbr+type);
+    if(key1 == 0){
+        console.log('calling HSET. urlAsString: ' + urlAsString + ', ' + abbr+type);
+        await client.HSET(urlAsString, type, abbr+type); // store reference to set of cookies
+    }
+    // check if num[type] key is already defined
+    let key2 = await client.EXISTS(abbr+'num'+type);
+    if(key2 == 0){
+        await client.HSET(urlAsString, 'num'+type, abbr+'num'+type); // store reference to numCookies
+    }
+}
+
 
 export async function storeCookies(untypedClient:any, cookiesList:Protocol.Network.Cookie[], urlAsString:string){
     let client = <RedisClientType>untypedClient;
