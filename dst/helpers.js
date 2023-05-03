@@ -9,10 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.storeNumPages = exports.storeData = exports.getCategories = exports.searchContent = exports.exactSimilarity = exports.validLinks = exports.getUrlBase = exports.getAbbr = void 0;
+exports.storeNumPages = exports.storeData = exports.getCategories = exports.searchContent = exports.exactSimilarity = exports.validLinks = exports.getUrlBase = exports.getAbbr = exports.delay = void 0;
 const siteData_1 = require("./siteData");
 const node_crypto_1 = require("node:crypto");
 var JSSoup = require('jssoup').default;
+function delay(min, max) {
+    return new Promise(r => setTimeout(r, Math.floor(Math.random() * (max - min) + min)));
+}
+exports.delay = delay;
 function getAbbr(url) {
     let result = siteData_1.abbreviations.get(url);
     if (typeof (result) == "string") {
@@ -71,12 +75,16 @@ function searchContent(type, content) {
     return new Set(matches);
 }
 exports.searchContent = searchContent;
-function getCategories(url) {
+function getCategories(document, url) {
+    const categories = new Set;
     if (url == 'https://chnge.com') {
-        // document.getElementsByClassName('menu-grid')[0]
+        // <div class='menu-grid'> list of <a>Category Name</a> elements </div>
+        var divElement = document.getElementsByClassName('menu-grid')[0];
+        Array.from(divElement.getElementsByTagName('a')).forEach((a) => {
+            categories.add(a.innerText);
+        });
     }
-    // other sites
-    return new Set();
+    return categories;
 }
 exports.getCategories = getCategories;
 // type = cookies, certs, keywords

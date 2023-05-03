@@ -4,6 +4,10 @@ import { createHash } from 'node:crypto';
 import { RedisClientType } from '@redis/client';
 var JSSoup = require('jssoup').default;
 
+export function delay(min: number, max: number){
+    return new Promise(r => setTimeout(r, Math.floor(Math.random()*(max-min) + min)))
+}
+
 export function getAbbr(url:string):string{
     let result = abbreviations.get(url);
     if(typeof(result) == "string"){
@@ -61,12 +65,16 @@ export function searchContent(type:string, content:string):Set<string>{
     return new Set(matches);
 }
 
-export function getCategories(url:string):Set<string>{
+export function getCategories(document:Document, url:string):Set<string>{
+    const categories = new Set<string>;
     if(url == 'https://chnge.com'){
-        // document.getElementsByClassName('menu-grid')[0]
+        // <div class='menu-grid'> list of <a>Category Name</a> elements </div>
+        var divElement:HTMLDivElement = <HTMLDivElement>document.getElementsByClassName('menu-grid')[0];
+        Array.from(divElement.getElementsByTagName('a')).forEach( (a:HTMLAnchorElement) => {
+            categories.add(a.innerText);
+        });
     }
-    // other sites
-    return new Set();
+    return categories;
 }
 
 // type = cookies, certs, keywords

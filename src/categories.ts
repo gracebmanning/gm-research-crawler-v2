@@ -19,52 +19,23 @@ async function main(url:string) {
         await page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
         await delay(1000, 2000); // emulates human behavior
         
-        const links = await page.evaluate(() => {   
-            // get links
-            const anchors = document.getElementsByTagName('a');
-            return Array.from(anchors).map(a => a.href);
-        });
-
-        // add URL to seen links
-        seen.add(url);
-
-        const content = await page.content();
-
-        // exact similarity detection
-        const exact = exactSimilarity(shaKeys, content);
-        if(!exact){
-
-            // get valid links, add to queue (and seen set) if not seen 
-            let valid = validLinks(url, links);
-            valid.forEach((l) => {
-                if(!seen.has(l)){
-                    queue.push(l);
-                    seen.add(l);
+        const categories:Set<string> = await page.evaluate((url:string) => {   
+            // get categories
+            const result = new Set<string>;
+            if(url == 'https://chnge.com'){
+                // <div class='menu-grid'> list of <a>Category Name</a> elements </div>
+                var divElement:HTMLDivElement = <HTMLDivElement>document.getElementsByClassName('menu-grid')[0];
+                var tempArray = Array.from(divElement.getElementsByTagName('a')).map( (a:HTMLAnchorElement) => { a.innerText });
+                for(var e in tempArray){
+                    result.add(e);
                 }
-            });
-    
-            // cookies
-            const cookies = await page.cookies();
-            storeData(client, url, 'cookies', new Set(Array.from(cookies).map(c => JSON.stringify(c))));
-
-            // certifications
-            storeData(client, url, 'certs', searchContent('certs', content));
-            
-            // sustainability count (count num keywords / buzzwords)
-            storeData(client, url, 'keywords', searchContent('keywords', content));
-
-            // categories
-            //storeData(client, url, 'categories', categories); 
-            // if(!foundCategories){
-            //     const categories = await page.evaluate(() => {
-            //         return getCategories(pageDocument, url);
-            //     });
-            //     storeData(client, url, 'categories', categories);
-            // }
-
-            // sizes
-            // store set of sizes seen on site (unique)
-        }
+            }
+            return result;
+        }, url);
+        
+        console.log(categories);
+        storeData(client, url, 'categories', categories);
+        
         await browser.close();
     }
     catch (e) {
@@ -87,8 +58,6 @@ let run = async()=>{
             //console.log(categories);
             console.log(((new Date().getTime() - start)/1000).toString() + ' seconds');
         }
-        storeNumPages(client, seedURL, seen); // stores number of pages for url
-        seen.clear(); // seen is empty for next seedURL
     }
 
     await client.disconnect(); // disconnect from Redis server
@@ -106,11 +75,10 @@ const client = createClient({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err:Error) => console.log('Redis Client Error', err));
 
 var seeds:Set<string> = new Set<string>;     // new Set(sites); use sites array from siteData.ts file              
-seeds.add("https://chnge.com"); // just one seed URL right now
+seeds.add('https://chnge.com'); // just one seed URL right now
 
 var queue:Array<string> = new Array(); // links to visit next
 var seen:Set<string> = new Set(); // unique seen links
-var shaKeys:Set<string> = new Set(); // SHA keys for exact similarity detection
 
 // data collection sets
 //var categories = new Set<string>; // one set for an entire domain

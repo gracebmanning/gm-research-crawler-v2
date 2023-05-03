@@ -26,43 +26,21 @@ function main(url) {
             yield page.setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 13_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/110.0.0.0 Mobile/15E148 Safari/604.1');
             yield page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
             yield (0, helpers_1.delay)(1000, 2000); // emulates human behavior
-            const links = yield page.evaluate(() => {
-                // get links
-                const anchors = document.getElementsByTagName('a');
-                return Array.from(anchors).map(a => a.href);
-            });
-            // add URL to seen links
-            seen.add(url);
-            const content = yield page.content();
-            // exact similarity detection
-            const exact = (0, helpers_1.exactSimilarity)(shaKeys, content);
-            if (!exact) {
-                // get valid links, add to queue (and seen set) if not seen 
-                let valid = (0, helpers_1.validLinks)(url, links);
-                valid.forEach((l) => {
-                    if (!seen.has(l)) {
-                        queue.push(l);
-                        seen.add(l);
+            const categories = yield page.evaluate((url) => {
+                // get categories
+                const result = new Set;
+                if (url == 'https://chnge.com') {
+                    // <div class='menu-grid'> list of <a>Category Name</a> elements </div>
+                    var divElement = document.getElementsByClassName('menu-grid')[0];
+                    var tempArray = Array.from(divElement.getElementsByTagName('a')).map((a) => { a.innerText; });
+                    for (var e in tempArray) {
+                        result.add(e);
                     }
-                });
-                // cookies
-                const cookies = yield page.cookies();
-                (0, helpers_1.storeData)(client, url, 'cookies', new Set(Array.from(cookies).map(c => JSON.stringify(c))));
-                // certifications
-                (0, helpers_1.storeData)(client, url, 'certs', (0, helpers_1.searchContent)('certs', content));
-                // sustainability count (count num keywords / buzzwords)
-                (0, helpers_1.storeData)(client, url, 'keywords', (0, helpers_1.searchContent)('keywords', content));
-                // categories
-                //storeData(client, url, 'categories', categories); 
-                // if(!foundCategories){
-                //     const categories = await page.evaluate(() => {
-                //         return getCategories(pageDocument, url);
-                //     });
-                //     storeData(client, url, 'categories', categories);
-                // }
-                // sizes
-                // store set of sizes seen on site (unique)
-            }
+                }
+                return result;
+            }, url);
+            console.log(categories);
+            (0, helpers_1.storeData)(client, url, 'categories', categories);
             yield browser.close();
         }
         catch (e) {
@@ -84,8 +62,6 @@ let run = () => __awaiter(void 0, void 0, void 0, function* () {
             //console.log(categories);
             console.log(((new Date().getTime() - start) / 1000).toString() + ' seconds');
         }
-        (0, helpers_1.storeNumPages)(client, seedURL, seen); // stores number of pages for url
-        seen.clear(); // seen is empty for next seedURL
     }
     yield client.disconnect(); // disconnect from Redis server
     let end = new Date().getTime(); // stop timer
@@ -98,10 +74,9 @@ let run = () => __awaiter(void 0, void 0, void 0, function* () {
 const client = (0, redis_1.createClient)({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err) => console.log('Redis Client Error', err));
 var seeds = new Set; // new Set(sites); use sites array from siteData.ts file              
-seeds.add("https://chnge.com"); // just one seed URL right now
+seeds.add('https://chnge.com'); // just one seed URL right now
 var queue = new Array(); // links to visit next
 var seen = new Set(); // unique seen links
-var shaKeys = new Set(); // SHA keys for exact similarity detection
 // data collection sets
 //var categories = new Set<string>; // one set for an entire domain
 run();
