@@ -19,19 +19,25 @@ async function main(url:string) {
         await page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
         await delay(1000, 2000); // emulates human behavior
         
-        const categories:Set<string> = await page.evaluate((url:string) => {   
+        const divElement:HTMLDivElement = await page.evaluate((url:string) => {   
+            var result:HTMLDivElement;
             // get categories
-            const result = new Set<string>;
             if(url == 'https://chnge.com'){
                 // <div class='menu-grid'> list of <a>Category Name</a> elements </div>
-                var divElement:HTMLDivElement = <HTMLDivElement>document.getElementsByClassName('menu-grid')[0];
-                var tempArray = Array.from(divElement.getElementsByTagName('a')).map( (a:HTMLAnchorElement) => { a.innerText });
-                for(var e in tempArray){
-                    result.add(e);
-                }
+                result = <HTMLDivElement>document.getElementsByClassName('menu-grid')[0];
+                console.log(result);
+            }
+            else{
+                result = new HTMLDivElement();
             }
             return result;
         }, url);
+
+        const categories = new Set<string>;
+        var tempArray = Array.from(divElement.getElementsByTagName('a')).map( (a:HTMLAnchorElement) => { a.innerText });
+        for(var e in tempArray){
+            categories.add(e);
+        }
         
         console.log(categories);
         storeData(client, url, 'categories', categories);

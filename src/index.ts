@@ -1,5 +1,5 @@
 import { createClient } from 'redis';
-import { delay, validLinks, exactSimilarity, storeData, searchContent, getCategories, storeNumPages } from './helpers';
+import { delay, validLinks, exactSimilarity, storeData, searchContent, getCategories, storeNumPages, isCollectionLink } from './helpers';
 
 /**
  * FUNCTION DEFINITIONS
@@ -54,13 +54,10 @@ async function main(url:string) {
             storeData(client, url, 'keywords', searchContent('keywords', content));
 
             // categories
-            //storeData(client, url, 'categories', categories); 
-            // if(!foundCategories){
-            //     const categories = await page.evaluate(() => {
-            //         return getCategories(pageDocument, url);
-            //     });
-            //     storeData(client, url, 'categories', categories);
-            // }
+            if(isCollectionLink(url)){
+                categories.add(url);
+            }
+            storeData(client, url, 'categories', categories); 
 
             // sizes
             // store set of sizes seen on site (unique)
@@ -113,6 +110,6 @@ var seen:Set<string> = new Set(); // unique seen links
 var shaKeys:Set<string> = new Set(); // SHA keys for exact similarity detection
 
 // data collection sets
-//var categories = new Set<string>; // one set for an entire domain
+var categories = new Set<string>; // one set for an entire domain
 
 run();

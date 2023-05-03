@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.storeNumPages = exports.storeData = exports.getCategories = exports.searchContent = exports.exactSimilarity = exports.validLinks = exports.getUrlBase = exports.getAbbr = exports.delay = void 0;
+exports.storeNumPages = exports.storeData = exports.isCollectionLink = exports.getCategories = exports.searchContent = exports.exactSimilarity = exports.validLinks = exports.getUrlBase = exports.getAbbr = exports.delay = void 0;
 const siteData_1 = require("./siteData");
 const node_crypto_1 = require("node:crypto");
 var JSSoup = require('jssoup').default;
@@ -87,6 +87,35 @@ function getCategories(document, url) {
     return categories;
 }
 exports.getCategories = getCategories;
+function isCollectionLink(url) {
+    // TODO: Shein, H&M, PLT
+    let urlObj = new URL(url);
+    console.log('isCollectionLink(', url, '); urlObj.hostname:', urlObj.hostname);
+    let hostsWithCollections = new Set(['chnge.com', 'bigbudpress.com', 'www.fashionnova.com', 'www.fashionbrandcompany.com', 'shoptunnelvision.com', 'igirlworld.com']);
+    let hostsWithCategory = new Set(['www.forever21.com']);
+    if (hostsWithCollections.has(urlObj.hostname)) {
+        if (url.includes('/collections/')) {
+            return true;
+        }
+    }
+    else if (hostsWithCategory.has(urlObj.hostname)) {
+        if (url.includes('/category/')) {
+            return true;
+        }
+    }
+    else if (urlObj.hostname == 'us.shein.com') {
+        // no pattern?
+    }
+    else if (urlObj.hostname == 'www2.hm.com') {
+        // .../en_us/category/sub-category
+        // count the sub-categories?
+    }
+    else if (urlObj.hostname == 'www.prettylittlething.us') {
+        // use /shop-by/ and /clothing/ ?
+    }
+    return false;
+}
+exports.isCollectionLink = isCollectionLink;
 // type = cookies, certs, keywords
 function storeData(untypedClient, urlAsString, type, dataset) {
     return __awaiter(this, void 0, void 0, function* () {

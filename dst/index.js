@@ -53,13 +53,10 @@ function main(url) {
                 // sustainability count (count num keywords / buzzwords)
                 (0, helpers_1.storeData)(client, url, 'keywords', (0, helpers_1.searchContent)('keywords', content));
                 // categories
-                //storeData(client, url, 'categories', categories); 
-                // if(!foundCategories){
-                //     const categories = await page.evaluate(() => {
-                //         return getCategories(pageDocument, url);
-                //     });
-                //     storeData(client, url, 'categories', categories);
-                // }
+                if ((0, helpers_1.isCollectionLink)(url)) {
+                    categories.add(url);
+                }
+                (0, helpers_1.storeData)(client, url, 'categories', categories);
                 // sizes
                 // store set of sizes seen on site (unique)
             }
@@ -103,5 +100,5 @@ var queue = new Array(); // links to visit next
 var seen = new Set(); // unique seen links
 var shaKeys = new Set(); // SHA keys for exact similarity detection
 // data collection sets
-//var categories = new Set<string>; // one set for an entire domain
+var categories = new Set; // one set for an entire domain
 run();

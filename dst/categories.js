@@ -26,19 +26,24 @@ function main(url) {
             yield page.setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 13_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/110.0.0.0 Mobile/15E148 Safari/604.1');
             yield page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
             yield (0, helpers_1.delay)(1000, 2000); // emulates human behavior
-            const categories = yield page.evaluate((url) => {
+            const divElement = yield page.evaluate((url) => {
+                var result;
                 // get categories
-                const result = new Set;
                 if (url == 'https://chnge.com') {
                     // <div class='menu-grid'> list of <a>Category Name</a> elements </div>
-                    var divElement = document.getElementsByClassName('menu-grid')[0];
-                    var tempArray = Array.from(divElement.getElementsByTagName('a')).map((a) => { a.innerText; });
-                    for (var e in tempArray) {
-                        result.add(e);
-                    }
+                    result = document.getElementsByClassName('menu-grid')[0];
+                    console.log(result);
+                }
+                else {
+                    result = new HTMLDivElement();
                 }
                 return result;
             }, url);
+            const categories = new Set;
+            var tempArray = Array.from(divElement.getElementsByTagName('a')).map((a) => { a.innerText; });
+            for (var e in tempArray) {
+                categories.add(e);
+            }
             console.log(categories);
             (0, helpers_1.storeData)(client, url, 'categories', categories);
             yield browser.close();

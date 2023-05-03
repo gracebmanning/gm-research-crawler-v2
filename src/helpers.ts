@@ -77,6 +77,37 @@ export function getCategories(document:Document, url:string):Set<string>{
     return categories;
 }
 
+export function isCollectionLink(url:string):boolean{
+    // TODO: Shein, H&M, PLT
+    let urlObj = new URL(url);
+
+    console.log('isCollectionLink(', url, '); urlObj.hostname:', urlObj.hostname);
+
+    let hostsWithCollections = new Set<string>(['chnge.com', 'bigbudpress.com', 'www.fashionnova.com', 'www.fashionbrandcompany.com', 'shoptunnelvision.com', 'igirlworld.com']);
+    let hostsWithCategory = new Set<string>(['www.forever21.com']);
+    if(hostsWithCollections.has(urlObj.hostname)){
+        if(url.includes('/collections/')){
+            return true;
+        }
+    }
+    else if(hostsWithCategory.has(urlObj.hostname)){
+        if(url.includes('/category/')){
+            return true;
+        }
+    }
+    else if(urlObj.hostname == 'us.shein.com'){
+        // no pattern?
+    }
+    else if(urlObj.hostname == 'www2.hm.com'){
+        // .../en_us/category/sub-category
+        // count the sub-categories?
+    }
+    else if(urlObj.hostname == 'www.prettylittlething.us'){
+        // use /shop-by/ and /clothing/ ?
+    }
+    return false;
+}
+
 // type = cookies, certs, keywords
 export async function storeData(untypedClient: any, urlAsString:string, type:string, dataset:Set<string>){
     let client = <RedisClientType>untypedClient;
