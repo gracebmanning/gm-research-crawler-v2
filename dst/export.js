@@ -65,8 +65,6 @@ let exportURLData = (url) => __awaiter(void 0, void 0, void 0, function* () {
     }
     ;
     dict['numcookies'] = numCookies;
-    //fs.writeFileSync(filename, 'cookies: ' + cookies + '\n', {flag:'a'});
-    //fs.writeFileSync(filename, 'numCookies: ' + numCookies + '\n', {flag:'a'});
     // keywords
     const keywordsSet = yield client.SMEMBERS(abbr + 'keywords');
     const keywords = Array.from(keywordsSet);
@@ -77,8 +75,6 @@ let exportURLData = (url) => __awaiter(void 0, void 0, void 0, function* () {
     }
     ;
     dict['numkeywords'] = numkeywords;
-    // fs.writeFileSync(filename, 'keywords: ' + keywords + '\n', {flag:'a'});
-    // fs.writeFileSync(filename, 'numkeywords: ' + numkeywords + '\n', {flag:'a'});
     // certs
     const certsSet = yield client.SMEMBERS(abbr + 'certs');
     const certs = Array.from(certsSet);
@@ -89,8 +85,6 @@ let exportURLData = (url) => __awaiter(void 0, void 0, void 0, function* () {
     }
     ;
     dict['numcerts'] = numcerts;
-    // fs.writeFileSync(filename, 'certs: ' + certs + '\n', {flag:'a'});
-    // fs.writeFileSync(filename, 'numcerts: ' + numcerts + '\n', {flag:'a'});
     // categories
     const categoriesSet = yield client.SMEMBERS(abbr + 'categories');
     const categories = Array.from(categoriesSet);
@@ -101,8 +95,6 @@ let exportURLData = (url) => __awaiter(void 0, void 0, void 0, function* () {
     }
     ;
     dict['numcategories'] = numcategories;
-    //fs.writeFileSync(filename, 'categories: ' + categories + '\n', {flag:'a'});
-    //fs.writeFileSync(filename, 'numcategories: ' + numcategories + '\n', {flag:'a'});
     // numpages
     let numpages = yield client.GET(abbr + 'numpages');
     if (numpages == null) {
@@ -110,7 +102,6 @@ let exportURLData = (url) => __awaiter(void 0, void 0, void 0, function* () {
     }
     ;
     dict['numpages'] == numpages;
-    //fs.writeFileSync(filename, 'numpages: ' + numpages + '\n', {flag:'a'});
     // time
     let time = yield client.GET(abbr + 'time');
     if (time == null) {
@@ -118,7 +109,6 @@ let exportURLData = (url) => __awaiter(void 0, void 0, void 0, function* () {
     }
     ;
     dict['time'] == time;
-    //fs.writeFileSync(filename, 'time: ' + time + '\n', {flag:'a'});
     var dictstring = JSON.stringify(dict);
     fs.writeFileSync(filename, dictstring);
     yield client.disconnect();

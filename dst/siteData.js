@@ -38,6 +38,7 @@ exports.certsRegExp = new RegExp(certs, 'gi');
 let keywords = `(sustainability)
                |(sustainable)
                |(recyclable)
+               |(recycled)
                |(reusable)
                |(environment)
                |(environmentally friendly)
