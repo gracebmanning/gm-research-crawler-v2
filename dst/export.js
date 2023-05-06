@@ -34,6 +34,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const redis_1 = require("redis");
 const readline = __importStar(require("readline"));
+const fs = __importStar(require("fs"));
+const helpers_1 = require("./helpers");
 let rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -48,7 +50,65 @@ let exportAllData = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 // export data for one URL
 let exportURLData = (url) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('cookies: ', loadData(url, 'cookies'));
+    yield client.connect();
+    const abbr = (0, helpers_1.getAbbr)(url);
+    console.log(abbr, url);
+    const filename = './output/' + abbr + 'log.txt';
+    // cookies
+    const cookiesSet = yield client.SMEMBERS(abbr + 'cookies');
+    const cookies = Array.from(cookiesSet).join(',');
+    let numCookies = yield client.GET(abbr + 'numcookies');
+    if (numCookies == null) {
+        numCookies = " ";
+    }
+    ;
+    fs.writeFileSync(filename, 'cookies: ' + cookies + '\n', { flag: 'a' });
+    fs.writeFileSync(filename, 'numCookies: ' + numCookies + '\n', { flag: 'a' });
+    // keywords
+    const keywordsSet = yield client.SMEMBERS(abbr + 'keywords');
+    const keywords = Array.from(keywordsSet).join(',');
+    let numkeywords = yield client.GET(abbr + 'numkeywords');
+    if (numkeywords == null) {
+        numkeywords = " ";
+    }
+    ;
+    fs.writeFileSync(filename, 'keywords: ' + keywords + '\n', { flag: 'a' });
+    fs.writeFileSync(filename, 'numkeywords: ' + numkeywords + '\n', { flag: 'a' });
+    // certs
+    const certsSet = yield client.SMEMBERS(abbr + 'certs');
+    const certs = Array.from(certsSet).join(',');
+    let numcerts = yield client.GET(abbr + 'numcerts');
+    if (numcerts == null) {
+        numcerts = " ";
+    }
+    ;
+    fs.writeFileSync(filename, 'certs: ' + certs + '\n', { flag: 'a' });
+    fs.writeFileSync(filename, 'numcerts: ' + numcerts + '\n', { flag: 'a' });
+    // categories
+    const categoriesSet = yield client.SMEMBERS(abbr + 'categories');
+    const categories = Array.from(categoriesSet).join(',');
+    let numcategories = yield client.GET(abbr + 'numcategories');
+    if (numcategories == null) {
+        numcategories = " ";
+    }
+    ;
+    fs.writeFileSync(filename, 'categories: ' + categories + '\n', { flag: 'a' });
+    fs.writeFileSync(filename, 'numcategories: ' + numcategories + '\n', { flag: 'a' });
+    // numpages
+    let numpages = yield client.GET(abbr + 'numpages');
+    if (numpages == null) {
+        numpages = " ";
+    }
+    ;
+    fs.writeFileSync(filename, 'numpages: ' + numpages + '\n', { flag: 'a' });
+    // time
+    let time = yield client.GET(abbr + 'time');
+    if (time == null) {
+        time = " ";
+    }
+    ;
+    fs.writeFileSync(filename, 'time: ' + time + '\n', { flag: 'a' });
+    yield client.disconnect();
 });
 const client = (0, redis_1.createClient)({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err) => console.log('Redis Client Error', err));
@@ -70,34 +130,34 @@ rl.question(question, (answer) => {
             exportAllData();
             break;
         case '1':
-            exportURLData('https://www.forever21.com/');
+            exportURLData('https://www.forever21.com');
             break;
         case '2':
-            exportURLData('https://us.shein.com/');
+            exportURLData('https://us.shein.com');
             break;
         case '3':
-            exportURLData('https://www.fashionnova.com/');
+            exportURLData('https://www.fashionnova.com');
             break;
         case '4':
             exportURLData('https://www2.hm.com/en_us/index.html');
             break;
         case '5':
-            exportURLData('https://www.prettylittlething.us/');
+            exportURLData('https://www.prettylittlething.us');
             break;
         case '6':
-            exportURLData('https://bigbudpress.com/');
+            exportURLData('https://bigbudpress.com');
             break;
         case '7':
             exportURLData('https://chnge.com');
             break;
         case '8':
-            exportURLData('https://www.fashionbrandcompany.com/');
+            exportURLData('https://www.fashionbrandcompany.com');
             break;
         case '9':
-            exportURLData('https://shoptunnelvision.com/');
+            exportURLData('https://shoptunnelvision.com');
             break;
         case '10':
-            exportURLData('https://igirlworld.com/');
+            exportURLData('https://igirlworld.com');
             break;
         default:
             console.log('Invalid answer!');

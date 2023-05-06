@@ -1,5 +1,5 @@
 import { createClient } from 'redis';
-import { delay, validLinks, exactSimilarity, storeData, searchContent, getCategories, storeNumPages, isCollectionLink } from './helpers';
+import { delay, validLinks, exactSimilarity, storeData, searchContent, getCategories, storeNumPages, isCollectionLink, storeTime } from './helpers';
 
 /**
  * FUNCTION DEFINITIONS
@@ -61,6 +61,9 @@ async function main(url:string) {
 
             // sizes
             // store set of sizes seen on site (unique)
+
+            // prices
+            // can calculate average price
         }
         await browser.close();
     }
@@ -70,9 +73,9 @@ async function main(url:string) {
 }
 
 let run = async()=>{
-    let start = new Date().getTime(); // start timer
     await client.connect(); // connect to Redis server
-
+    let start = new Date().getTime(); // start timer
+    
     for(const seedURL of seeds){
         queue.push(seedURL);
         while(queue.length != 0){
@@ -80,19 +83,19 @@ let run = async()=>{
             if(url != undefined){
                 await main(url);
             }
-            console.log(seen);
+            console.log(seen.size);
             //console.log(categories);
             console.log(((new Date().getTime() - start)/1000).toString() + ' seconds');
         }
         storeNumPages(client, seedURL, seen); // stores number of pages for url
         seen.clear(); // seen is empty for next seedURL
     }
-
-    await client.disconnect(); // disconnect from Redis server
     let end = new Date().getTime(); // stop timer
-
-    // calculate time  
-    console.log('TOTAL: ' + ((end - start)/1000).toString() + ' seconds');
+    let totalSeconds = (end - start)/1000; // calculate time   
+    storeTime(client, seed, end); // store time in Redis
+    console.log('TOTAL: ' + (totalSeconds).toString() + ' seconds');
+    
+    await client.disconnect(); // disconnect from Redis server
 }
 
 
@@ -102,8 +105,9 @@ let run = async()=>{
 const client = createClient({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err:Error) => console.log('Redis Client Error', err));
 
-var seeds:Set<string> = new Set<string>;     // new Set(sites); use sites array from siteData.ts file              
-seeds.add("https://chnge.com"); // just one seed URL right now
+var seeds:Set<string> = new Set<string>;     // new Set(sites); use sites array from siteData.ts file
+var seed = 'https://bigbudpress.com';    
+seeds.add(seed); // just one seed URL right now
 
 var queue:Array<string> = new Array(); // links to visit next
 var seen:Set<string> = new Set(); // unique seen links

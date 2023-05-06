@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.storeNumPages = exports.storeData = exports.isCollectionLink = exports.getCategories = exports.searchContent = exports.exactSimilarity = exports.validLinks = exports.getUrlBase = exports.getAbbr = exports.delay = void 0;
+exports.storeTime = exports.storeNumPages = exports.storeData = exports.isCollectionLink = exports.getCategories = exports.searchContent = exports.exactSimilarity = exports.validLinks = exports.getUrlBase = exports.getAbbr = exports.delay = void 0;
 const siteData_1 = require("./siteData");
 const node_crypto_1 = require("node:crypto");
 var JSSoup = require('jssoup').default;
@@ -90,11 +90,10 @@ exports.getCategories = getCategories;
 function isCollectionLink(url) {
     // TODO: Shein, H&M, PLT
     let urlObj = new URL(url);
-    console.log('isCollectionLink(', url, '); urlObj.hostname:', urlObj.hostname);
     let hostsWithCollections = new Set(['chnge.com', 'bigbudpress.com', 'www.fashionnova.com', 'www.fashionbrandcompany.com', 'shoptunnelvision.com', 'igirlworld.com']);
     let hostsWithCategory = new Set(['www.forever21.com']);
     if (hostsWithCollections.has(urlObj.hostname)) {
-        if (url.includes('/collections/')) {
+        if (url.replace(/https:\/\/[a-z].*\/collections\/[\w\d-]+/gm, "").length == 0) {
             return true;
         }
     }
@@ -139,15 +138,21 @@ function storeNumPages(untypedClient, urlAsString, dataset) {
         let urlBase = getUrlBase(urlAsString);
         let abbr = getAbbr(urlBase);
         var data = dataset;
-        let key2 = yield client.EXISTS(abbr + 'numpages');
-        if (key2 == 0) {
-            yield client.HSET(urlAsString, 'numpages', abbr + 'numpages'); // store reference to numpages
-        }
         // store numpages
         yield client.SET(abbr + 'numpages', data.size.toString());
     });
 }
 exports.storeNumPages = storeNumPages;
+function storeTime(untypedClient, urlAsString, time) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let client = untypedClient;
+        let urlBase = getUrlBase(urlAsString);
+        let abbr = getAbbr(urlBase);
+        // store time to crawl
+        yield client.SET(abbr + 'time', time);
+    });
+}
+exports.storeTime = storeTime;
 /*
 
 // used to set hash references for a url

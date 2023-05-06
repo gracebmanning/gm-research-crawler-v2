@@ -1,5 +1,7 @@
 import { createClient } from 'redis';
 import * as readline from 'readline';
+import * as fs from 'fs';
+import { getAbbr } from './helpers';
 
 let rl = readline.createInterface({
   input: process.stdin,
@@ -13,11 +15,59 @@ async function loadData(url:string, field:string){
 
 let exportAllData = async()=>{
 
+
 }
 
 // export data for one URL
 let exportURLData = async(url:string)=>{
-  console.log('cookies: ', loadData(url, 'cookies'));
+  await client.connect();
+  const abbr = getAbbr(url);
+  console.log(abbr, url);
+  const filename = './output/' + abbr + 'log.txt';
+
+  // cookies
+  const cookiesSet = await client.SMEMBERS(abbr+'cookies');
+  const cookies = Array.from(cookiesSet).join(',');
+  let numCookies = await client.GET(abbr+'numcookies');
+  if(numCookies == null){ numCookies = " "};
+  fs.writeFileSync(filename, 'cookies: ' + cookies + '\n', {flag:'a'});
+  fs.writeFileSync(filename, 'numCookies: ' + numCookies + '\n', {flag:'a'});
+
+  // keywords
+  const keywordsSet = await client.SMEMBERS(abbr+'keywords');
+  const keywords = Array.from(keywordsSet).join(',');
+  let numkeywords = await client.GET(abbr+'numkeywords');
+  if(numkeywords == null){ numkeywords = " "};
+  fs.writeFileSync(filename, 'keywords: ' + keywords + '\n', {flag:'a'});
+  fs.writeFileSync(filename, 'numkeywords: ' + numkeywords + '\n', {flag:'a'});
+
+  // certs
+  const certsSet = await client.SMEMBERS(abbr+'certs');
+  const certs = Array.from(certsSet).join(',');
+  let numcerts = await client.GET(abbr+'numcerts');
+  if(numcerts == null){ numcerts = " "};
+  fs.writeFileSync(filename, 'certs: ' + certs + '\n', {flag:'a'});
+  fs.writeFileSync(filename, 'numcerts: ' + numcerts + '\n', {flag:'a'});
+
+  // categories
+  const categoriesSet = await client.SMEMBERS(abbr+'categories');
+  const categories = Array.from(categoriesSet).join(',');
+  let numcategories = await client.GET(abbr+'numcategories');
+  if(numcategories == null){ numcategories = " "};
+  fs.writeFileSync(filename, 'categories: ' + categories + '\n', {flag:'a'});
+  fs.writeFileSync(filename, 'numcategories: ' + numcategories + '\n', {flag:'a'});
+
+  // numpages
+  let numpages = await client.GET(abbr+'numpages');
+  if(numpages == null){ numpages = " "};
+  fs.writeFileSync(filename, 'numpages: ' + numpages + '\n', {flag:'a'});
+
+  // time
+  let time = await client.GET(abbr+'time');
+  if(time == null){ time = " "};
+  fs.writeFileSync(filename, 'time: ' + time + '\n', {flag:'a'});
+
+  await client.disconnect();
 }
 
 const client = createClient({ url: "redis://127.0.0.1:6379" });
@@ -42,34 +92,34 @@ rl.question(question, (answer) => {
         exportAllData();
         break;
       case '1':
-        exportURLData('https://www.forever21.com/');
+        exportURLData('https://www.forever21.com');
         break;
       case '2':
-        exportURLData('https://us.shein.com/');
+        exportURLData('https://us.shein.com');
         break;
       case '3':
-        exportURLData('https://www.fashionnova.com/');
+        exportURLData('https://www.fashionnova.com');
         break;
       case '4':
         exportURLData('https://www2.hm.com/en_us/index.html');
         break;
       case '5':
-        exportURLData('https://www.prettylittlething.us/');
+        exportURLData('https://www.prettylittlething.us');
         break;
       case '6':
-        exportURLData('https://bigbudpress.com/');
+        exportURLData('https://bigbudpress.com');
         break;
       case '7':
         exportURLData('https://chnge.com');
         break;
       case '8':
-        exportURLData('https://www.fashionbrandcompany.com/');
+        exportURLData('https://www.fashionbrandcompany.com');
         break;
       case '9':
-        exportURLData('https://shoptunnelvision.com/');
+        exportURLData('https://shoptunnelvision.com');
         break;
       case '10':
-      exportURLData('https://igirlworld.com/');
+      exportURLData('https://igirlworld.com');
       break;
       default:
         console.log('Invalid answer!');

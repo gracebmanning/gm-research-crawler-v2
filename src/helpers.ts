@@ -1,5 +1,4 @@
 import { abbreviations, certsRegExp, keywordsRegExp } from './siteData';
-import { Protocol } from 'puppeteer';
 import { createHash } from 'node:crypto';
 import { RedisClientType } from '@redis/client';
 var JSSoup = require('jssoup').default;
@@ -80,13 +79,11 @@ export function getCategories(document:Document, url:string):Set<string>{
 export function isCollectionLink(url:string):boolean{
     // TODO: Shein, H&M, PLT
     let urlObj = new URL(url);
-
-    console.log('isCollectionLink(', url, '); urlObj.hostname:', urlObj.hostname);
-
     let hostsWithCollections = new Set<string>(['chnge.com', 'bigbudpress.com', 'www.fashionnova.com', 'www.fashionbrandcompany.com', 'shoptunnelvision.com', 'igirlworld.com']);
     let hostsWithCategory = new Set<string>(['www.forever21.com']);
+    
     if(hostsWithCollections.has(urlObj.hostname)){
-        if(url.includes('/collections/')){
+        if(url.replace(/https:\/\/[a-z].*\/collections\/[\w\d-]+/gm, "").length == 0){
             return true;
         }
     }
@@ -130,13 +127,17 @@ export async function storeNumPages(untypedClient: any, urlAsString:string, data
     let abbr:string = getAbbr(urlBase);
     var data:Set<string> = dataset;
 
-    let key2 = await client.EXISTS(abbr+'numpages');
-    if(key2 == 0){
-        await client.HSET(urlAsString, 'numpages', abbr+'numpages'); // store reference to numpages
-    }
-
     // store numpages
     await client.SET(abbr+'numpages', data.size.toString());
+}
+
+export async function storeTime(untypedClient: any, urlAsString:string, time:number){
+    let client = <RedisClientType>untypedClient;
+    let urlBase:string = getUrlBase(urlAsString);
+    let abbr:string = getAbbr(urlBase);
+
+    // store time to crawl
+    await client.SET(abbr+'time', time);
 }
 
 /*
