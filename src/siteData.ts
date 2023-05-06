@@ -9,6 +9,7 @@ export var abbreviations:Map<string, string> = new Map([
     ["https://www.fashionbrandcompany.com","FBC"],
     ["https://shoptunnelvision.com","TV"],
     ["https://igirlworld.com","IG"],
+    ["https://grace-manning.com","GM"],
 ]);
 
 export var sites:string[] = [
@@ -28,7 +29,7 @@ let certs = `(B Corp)|(B-Corp)
             |(OEKO-TEX)|(OEKO TEX)
             |(SEDEX)|(Supplier Ethical Data Exchange)
             |(SGS)|(Société Générale de Surveillance)
-            |(WRAP)|(Worldwide Responsible Accredited Production)
+            |(Worldwide Responsible Accredited Production)
             |(NAFTA)|(North American Free Trade Agreement)
             |(GOTS)|(Global Organic Textile Standard)
             |(LEED)|(Leadership in Energy and Environmental Design)`;
@@ -37,6 +38,7 @@ export var certsRegExp:RegExp = new RegExp(certs, 'gi');
 let keywords = `(sustainability)
                |(sustainable)
                |(recyclable)
+               |(recycled)
                |(reusable)
                |(environment)
                |(environmentally friendly)

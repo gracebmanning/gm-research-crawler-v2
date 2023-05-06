@@ -23,49 +23,58 @@ let exportURLData = async(url:string)=>{
   await client.connect();
   const abbr = getAbbr(url);
   console.log(abbr, url);
-  const filename = './output/' + abbr + 'log.txt';
+  const filename = './data/' + abbr + 'log.json';
+
+  var dict:{[key:string]:any} = {};
 
   // cookies
   const cookiesSet = await client.SMEMBERS(abbr+'cookies');
-  const cookies = Array.from(cookiesSet).join(',');
+  const cookies = Array.from(cookiesSet);
+  dict['cookies'] = cookies;
+  
   let numCookies = await client.GET(abbr+'numcookies');
   if(numCookies == null){ numCookies = " "};
-  fs.writeFileSync(filename, 'cookies: ' + cookies + '\n', {flag:'a'});
-  fs.writeFileSync(filename, 'numCookies: ' + numCookies + '\n', {flag:'a'});
+  dict['numcookies'] = numCookies;
 
   // keywords
   const keywordsSet = await client.SMEMBERS(abbr+'keywords');
-  const keywords = Array.from(keywordsSet).join(',');
+  const keywords = Array.from(keywordsSet);
+  dict['keywords'] = keywords;
+  
   let numkeywords = await client.GET(abbr+'numkeywords');
   if(numkeywords == null){ numkeywords = " "};
-  fs.writeFileSync(filename, 'keywords: ' + keywords + '\n', {flag:'a'});
-  fs.writeFileSync(filename, 'numkeywords: ' + numkeywords + '\n', {flag:'a'});
+  dict['numkeywords'] = numkeywords;
 
   // certs
   const certsSet = await client.SMEMBERS(abbr+'certs');
-  const certs = Array.from(certsSet).join(',');
+  const certs = Array.from(certsSet);
+  dict['certs'] = certs;
+
   let numcerts = await client.GET(abbr+'numcerts');
   if(numcerts == null){ numcerts = " "};
-  fs.writeFileSync(filename, 'certs: ' + certs + '\n', {flag:'a'});
-  fs.writeFileSync(filename, 'numcerts: ' + numcerts + '\n', {flag:'a'});
+  dict['numcerts'] = numcerts;
 
   // categories
   const categoriesSet = await client.SMEMBERS(abbr+'categories');
-  const categories = Array.from(categoriesSet).join(',');
+  const categories = Array.from(categoriesSet);
+  dict['categories'] = categories;
+
   let numcategories = await client.GET(abbr+'numcategories');
   if(numcategories == null){ numcategories = " "};
-  fs.writeFileSync(filename, 'categories: ' + categories + '\n', {flag:'a'});
-  fs.writeFileSync(filename, 'numcategories: ' + numcategories + '\n', {flag:'a'});
+  dict['numcategories'] = numcategories;
 
   // numpages
   let numpages = await client.GET(abbr+'numpages');
   if(numpages == null){ numpages = " "};
-  fs.writeFileSync(filename, 'numpages: ' + numpages + '\n', {flag:'a'});
+  dict['numpages'] == numpages;
 
   // time
   let time = await client.GET(abbr+'time');
   if(time == null){ time = " "};
-  fs.writeFileSync(filename, 'time: ' + time + '\n', {flag:'a'});
+  dict['time'] == time;
+
+  var dictstring = JSON.stringify(dict);
+  fs.writeFileSync(filename, dictstring);
 
   await client.disconnect();
 }

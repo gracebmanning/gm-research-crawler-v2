@@ -87,12 +87,12 @@ let run = async()=>{
             //console.log(categories);
             console.log(((new Date().getTime() - start)/1000).toString() + ' seconds');
         }
-        storeNumPages(client, seedURL, seen); // stores number of pages for url
+        await storeNumPages(client, seedURL, seen); // stores number of pages for url
         seen.clear(); // seen is empty for next seedURL
     }
     let end = new Date().getTime(); // stop timer
     let totalSeconds = (end - start)/1000; // calculate time   
-    storeTime(client, seed, end); // store time in Redis
+    await storeTime(client, seed, totalSeconds); // store time in Redis
     console.log('TOTAL: ' + (totalSeconds).toString() + ' seconds');
     
     await client.disconnect(); // disconnect from Redis server
@@ -106,7 +106,7 @@ const client = createClient({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err:Error) => console.log('Redis Client Error', err));
 
 var seeds:Set<string> = new Set<string>;     // new Set(sites); use sites array from siteData.ts file
-var seed = 'https://bigbudpress.com';    
+var seed = 'https://grace-manning.com';    
 seeds.add(seed); // just one seed URL right now
 
 var queue:Array<string> = new Array(); // links to visit next

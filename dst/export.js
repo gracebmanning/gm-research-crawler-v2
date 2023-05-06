@@ -53,61 +53,74 @@ let exportURLData = (url) => __awaiter(void 0, void 0, void 0, function* () {
     yield client.connect();
     const abbr = (0, helpers_1.getAbbr)(url);
     console.log(abbr, url);
-    const filename = './output/' + abbr + 'log.txt';
+    const filename = './data/' + abbr + 'log.json';
+    var dict = {};
     // cookies
     const cookiesSet = yield client.SMEMBERS(abbr + 'cookies');
-    const cookies = Array.from(cookiesSet).join(',');
+    const cookies = Array.from(cookiesSet);
+    dict['cookies'] = cookies;
     let numCookies = yield client.GET(abbr + 'numcookies');
     if (numCookies == null) {
         numCookies = " ";
     }
     ;
-    fs.writeFileSync(filename, 'cookies: ' + cookies + '\n', { flag: 'a' });
-    fs.writeFileSync(filename, 'numCookies: ' + numCookies + '\n', { flag: 'a' });
+    dict['numcookies'] = numCookies;
+    //fs.writeFileSync(filename, 'cookies: ' + cookies + '\n', {flag:'a'});
+    //fs.writeFileSync(filename, 'numCookies: ' + numCookies + '\n', {flag:'a'});
     // keywords
     const keywordsSet = yield client.SMEMBERS(abbr + 'keywords');
-    const keywords = Array.from(keywordsSet).join(',');
+    const keywords = Array.from(keywordsSet);
+    dict['keywords'] = keywords;
     let numkeywords = yield client.GET(abbr + 'numkeywords');
     if (numkeywords == null) {
         numkeywords = " ";
     }
     ;
-    fs.writeFileSync(filename, 'keywords: ' + keywords + '\n', { flag: 'a' });
-    fs.writeFileSync(filename, 'numkeywords: ' + numkeywords + '\n', { flag: 'a' });
+    dict['numkeywords'] = numkeywords;
+    // fs.writeFileSync(filename, 'keywords: ' + keywords + '\n', {flag:'a'});
+    // fs.writeFileSync(filename, 'numkeywords: ' + numkeywords + '\n', {flag:'a'});
     // certs
     const certsSet = yield client.SMEMBERS(abbr + 'certs');
-    const certs = Array.from(certsSet).join(',');
+    const certs = Array.from(certsSet);
+    dict['certs'] = certs;
     let numcerts = yield client.GET(abbr + 'numcerts');
     if (numcerts == null) {
         numcerts = " ";
     }
     ;
-    fs.writeFileSync(filename, 'certs: ' + certs + '\n', { flag: 'a' });
-    fs.writeFileSync(filename, 'numcerts: ' + numcerts + '\n', { flag: 'a' });
+    dict['numcerts'] = numcerts;
+    // fs.writeFileSync(filename, 'certs: ' + certs + '\n', {flag:'a'});
+    // fs.writeFileSync(filename, 'numcerts: ' + numcerts + '\n', {flag:'a'});
     // categories
     const categoriesSet = yield client.SMEMBERS(abbr + 'categories');
-    const categories = Array.from(categoriesSet).join(',');
+    const categories = Array.from(categoriesSet);
+    dict['categories'] = categories;
     let numcategories = yield client.GET(abbr + 'numcategories');
     if (numcategories == null) {
         numcategories = " ";
     }
     ;
-    fs.writeFileSync(filename, 'categories: ' + categories + '\n', { flag: 'a' });
-    fs.writeFileSync(filename, 'numcategories: ' + numcategories + '\n', { flag: 'a' });
+    dict['numcategories'] = numcategories;
+    //fs.writeFileSync(filename, 'categories: ' + categories + '\n', {flag:'a'});
+    //fs.writeFileSync(filename, 'numcategories: ' + numcategories + '\n', {flag:'a'});
     // numpages
     let numpages = yield client.GET(abbr + 'numpages');
     if (numpages == null) {
         numpages = " ";
     }
     ;
-    fs.writeFileSync(filename, 'numpages: ' + numpages + '\n', { flag: 'a' });
+    dict['numpages'] == numpages;
+    //fs.writeFileSync(filename, 'numpages: ' + numpages + '\n', {flag:'a'});
     // time
     let time = yield client.GET(abbr + 'time');
     if (time == null) {
         time = " ";
     }
     ;
-    fs.writeFileSync(filename, 'time: ' + time + '\n', { flag: 'a' });
+    dict['time'] == time;
+    //fs.writeFileSync(filename, 'time: ' + time + '\n', {flag:'a'});
+    var dictstring = JSON.stringify(dict);
+    fs.writeFileSync(filename, dictstring);
     yield client.disconnect();
 });
 const client = (0, redis_1.createClient)({ url: "redis://127.0.0.1:6379" });
