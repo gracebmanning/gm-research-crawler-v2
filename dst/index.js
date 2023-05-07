@@ -98,7 +98,7 @@ let run = () => __awaiter(void 0, void 0, void 0, function* () {
 const client = (0, redis_1.createClient)({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err) => console.log('Redis Client Error', err));
 var seeds = new Set; // new Set(sites); use sites array from siteData.ts file
-var seed = 'https://www.forever21.com';
+var seed = 'https://chnge.com';
 seeds.add(seed); // just one seed URL right now
 var queue = new Array(); // links to visit next
 var seen = new Set(); // unique seen links

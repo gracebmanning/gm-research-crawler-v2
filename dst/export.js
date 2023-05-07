@@ -54,11 +54,13 @@ let exportURLData = (url) => __awaiter(void 0, void 0, void 0, function* () {
     const abbr = (0, helpers_1.getAbbr)(url);
     console.log(abbr, url);
     const filename = './data/' + abbr + 'log.json';
+    const cookiesFilename = './data/' + abbr + 'cookies.json';
     var dict = {};
+    var cookiesDict = {};
     // cookies
     const cookiesSet = yield client.SMEMBERS(abbr + 'cookies');
     const cookies = Array.from(cookiesSet);
-    dict['cookies'] = cookies;
+    cookiesDict['cookies'] = cookies;
     let numCookies = yield client.GET(abbr + 'numcookies');
     if (numCookies == null) {
         numCookies = " ";
@@ -111,6 +113,8 @@ let exportURLData = (url) => __awaiter(void 0, void 0, void 0, function* () {
     dict['time'] == time;
     var dictstring = JSON.stringify(dict);
     fs.writeFileSync(filename, dictstring);
+    var cookiesDictstring = JSON.stringify(cookiesDict);
+    fs.writeFileSync(cookiesFilename, cookiesDictstring);
     yield client.disconnect();
 });
 const client = (0, redis_1.createClient)({ url: "redis://127.0.0.1:6379" });

@@ -24,13 +24,15 @@ let exportURLData = async(url:string)=>{
   const abbr = getAbbr(url);
   console.log(abbr, url);
   const filename = './data/' + abbr + 'log.json';
+  const cookiesFilename = './data/' + abbr + 'cookies.json';
 
   var dict:{[key:string]:any} = {};
+  var cookiesDict:{[key:string]:any} = {};
 
   // cookies
   const cookiesSet = await client.SMEMBERS(abbr+'cookies');
   const cookies = Array.from(cookiesSet);
-  dict['cookies'] = cookies;
+  cookiesDict['cookies'] = cookies;
   
   let numCookies = await client.GET(abbr+'numcookies');
   if(numCookies == null){ numCookies = " "};
@@ -75,6 +77,9 @@ let exportURLData = async(url:string)=>{
 
   var dictstring = JSON.stringify(dict);
   fs.writeFileSync(filename, dictstring);
+  
+  var cookiesDictstring = JSON.stringify(cookiesDict);
+  fs.writeFileSync(cookiesFilename, cookiesDictstring);
 
   await client.disconnect();
 }
