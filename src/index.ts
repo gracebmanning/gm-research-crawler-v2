@@ -83,6 +83,7 @@ let run = async()=>{
             if(url != undefined){
                 await main(url);
             }
+            console.log(seen);
             console.log(seen.size);
             //console.log(categories);
             console.log(((new Date().getTime() - start)/1000).toString() + ' seconds');
@@ -106,7 +107,7 @@ const client = createClient({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err:Error) => console.log('Redis Client Error', err));
 
 var seeds:Set<string> = new Set<string>;     // new Set(sites); use sites array from siteData.ts file
-var seed = 'https://chnge.com';    
+var seed = 'https://igirlworld.com';    
 seeds.add(seed); // just one seed URL right now
 
 var queue:Array<string> = new Array(); // links to visit next

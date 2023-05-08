@@ -47,7 +47,15 @@ function validLinks(url, links) {
             while (result.slice(-1) == "!") {
                 result = result.substring(0, result.length - 1);
             }
-            valid.push(result);
+            // check if from another country (igirl)
+            if (new URL(l).hostname == 'igirlworld.com') {
+                if (!(l.includes('/zh') || l.includes('/es'))) {
+                    valid.push(result);
+                }
+            }
+            else {
+                valid.push(result);
+            }
         }
     });
     return valid;

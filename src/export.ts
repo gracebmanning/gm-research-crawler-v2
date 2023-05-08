@@ -35,7 +35,7 @@ let exportURLData = async(url:string)=>{
   cookiesDict['cookies'] = cookies;
   
   let numCookies = await client.GET(abbr+'numcookies');
-  if(numCookies == null){ numCookies = " "};
+  if(numCookies == null){numCookies = " "};
   dict['numcookies'] = numCookies;
 
   // keywords
@@ -44,7 +44,7 @@ let exportURLData = async(url:string)=>{
   dict['keywords'] = keywords;
   
   let numkeywords = await client.GET(abbr+'numkeywords');
-  if(numkeywords == null){ numkeywords = " "};
+  if(numkeywords == null){numkeywords = " "};
   dict['numkeywords'] = numkeywords;
 
   // certs
@@ -53,7 +53,7 @@ let exportURLData = async(url:string)=>{
   dict['certs'] = certs;
 
   let numcerts = await client.GET(abbr+'numcerts');
-  if(numcerts == null){ numcerts = " "};
+  if(numcerts == null){numcerts = " "};
   dict['numcerts'] = numcerts;
 
   // categories
@@ -62,18 +62,18 @@ let exportURLData = async(url:string)=>{
   dict['categories'] = categories;
 
   let numcategories = await client.GET(abbr+'numcategories');
-  if(numcategories == null){ numcategories = " "};
+  if(numcategories == null){numcategories = " " };
   dict['numcategories'] = numcategories;
 
   // numpages
   let numpages = await client.GET(abbr+'numpages');
-  if(numpages == null){ numpages = " "};
-  dict['numpages'] == numpages;
+  if(numpages == null){numpages = " "};
+  dict['numpages'] = numpages;
 
   // time
   let time = await client.GET(abbr+'time');
-  if(time == null){ time = " "};
-  dict['time'] == time;
+  if(time == null){time = " "};
+  dict['time'] = time;
 
   var dictstring = JSON.stringify(dict);
   fs.writeFileSync(filename, dictstring);

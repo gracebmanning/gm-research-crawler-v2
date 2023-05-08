@@ -103,14 +103,14 @@ let exportURLData = (url) => __awaiter(void 0, void 0, void 0, function* () {
         numpages = " ";
     }
     ;
-    dict['numpages'] == numpages;
+    dict['numpages'] = numpages;
     // time
     let time = yield client.GET(abbr + 'time');
     if (time == null) {
         time = " ";
     }
     ;
-    dict['time'] == time;
+    dict['time'] = time;
     var dictstring = JSON.stringify(dict);
     fs.writeFileSync(filename, dictstring);
     var cookiesDictstring = JSON.stringify(cookiesDict);
