@@ -7,6 +7,7 @@ import { delay, validLinks, exactSimilarity, storeData, searchContent, getCatego
 
 async function main(url:string) {
     try {
+        console.log('crawling:', url);
         const puppeteer = require('puppeteer-extra');
         const StealthPlugin = require('puppeteer-extra-plugin-stealth');
         puppeteer.use(StealthPlugin());
@@ -83,7 +84,7 @@ let run = async()=>{
             if(url != undefined){
                 await main(url);
             }
-            console.log(seen);
+            //console.log(seen);
             console.log(seen.size);
             //console.log(categories);
             console.log(((new Date().getTime() - start)/1000).toString() + ' seconds');
@@ -107,7 +108,7 @@ const client = createClient({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err:Error) => console.log('Redis Client Error', err));
 
 var seeds:Set<string> = new Set<string>;     // new Set(sites); use sites array from siteData.ts file
-var seed = 'https://igirlworld.com';    
+var seed = 'https://www.fashionnova.com';    
 seeds.add(seed); // just one seed URL right now
 
 var queue:Array<string> = new Array(); // links to visit next

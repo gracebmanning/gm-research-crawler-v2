@@ -28,19 +28,22 @@ export function validLinks(url:string, links:string[]):string[]{
     let domain = new URL(url).hostname;
     links.forEach( (l) => {
         if(l != '' && new URL(l).hostname == domain){
-            let result = l.replace(/#[a-zA-Z]*/gm, "");
+            let result = l.replace(/#[a-zA-Z]*/gm, ""); // remove # at end of URL
             // remove slash at end of URL
             if(result.slice(-1) == "/"){
-                result = result.substring(0, result.length-1);
+                result = result.substring(0, result.length-1); 
             }
             // remove exclamation points at end of URL
             while(result.slice(-1) == "!"){
                 result = result.substring(0, result.length-1);
             }
-
+            // remove "-copy-copy-copy" from fashion nova pages
+            if(result.indexOf('-copy') != -1){
+                result = result.substring(0, result.indexOf('-copy'));
+            }
             // check if from another country (igirl)
             if(new URL(l).hostname == 'igirlworld.com'){
-                if(!(l.includes('/zh') || l.includes('/es'))){
+                if(!(result.includes('/zh') || result.includes('/es'))){
                     valid.push(result);
                 }
             }

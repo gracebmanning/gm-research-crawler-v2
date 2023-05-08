@@ -7,24 +7,26 @@
         "oeko-tex",
         "leed"
     ],
-    "numcerts": "0",
+    "numcerts": "3",
     "categories": [
-        "https://igirlworld.com/zh/collections/summer-mourning",
         "https://igirlworld.com/collections/apparel",
-        "https://igirlworld.com/es/collections/all",
-        "https://igirlworld.com/collections/wallets-purses-belts",
+        "https://igirlworld.com/collections/from-the-dirt",
         "https://igirlworld.com/collections/all",
-        "https://igirlworld.com/collections/earrings",
-        "https://igirlworld.com/zh/collections/all",
-        "https://igirlworld.com/zh/collections/summer-mourning-content",
-        "https://igirlworld.com/collections/summer-mourning",
+        "https://igirlworld.com/collections/classics",
         "https://igirlworld.com/collections/hair-accessories",
+        "https://igirlworld.com/collections/jewelry",
         "https://igirlworld.com/collections/necklaces",
+        "https://igirlworld.com/collections/bracelets",
         "https://igirlworld.com/collections/post-mortem-2",
-        "https://igirlworld.com/collections/socks-sleeves",
-        "https://igirlworld.com/collections/bracelets"
+        "https://igirlworld.com/collections/post-mortem",
+        "https://igirlworld.com/collections/wallets-purses-belts",
+        "https://igirlworld.com/collections/shop-all-1",
+        "https://igirlworld.com/collections/earrings",
+        "https://igirlworld.com/collections/summer-mourning",
+        "https://igirlworld.com/collections/sale",
+        "https://igirlworld.com/collections/socks-sleeves"
     ],
-    "numcategories": "0",
-    "numpages": "4694",
-    "time": "40534.065"
+    "numcategories": "16",
+    "numpages": "3783",
+    "time": "26568.908"
 }
