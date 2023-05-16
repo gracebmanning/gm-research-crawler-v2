@@ -9,11 +9,16 @@
   "author": "gracebmanning",
   "license": "ISC",
   "dependencies": {
+    "@xmldom/xmldom": "^0.8.7",
     "jssoup": "^0.0.15",
+    "node-fetch": "^2.6.10",
     "puppeteer": "^19.7.2",
     "puppeteer-extra": "^3.3.4",
     "puppeteer-extra-plugin-recaptcha": "^3.6.6",
     "puppeteer-extra-plugin-stealth": "^2.11.1",
     "redis": "^4.5.1"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.3"
   }
 }

@@ -120,7 +120,7 @@ let exportURLData = (url) => __awaiter(void 0, void 0, void 0, function* () {
 const client = (0, redis_1.createClient)({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err) => console.log('Redis Client Error', err));
 let question = `Which URL data would you like to export?\n
-0: all URL data\n
+0: empty\n
 1: https://www.forever21.com/\n
 2: https://us.shein.com/\n
 3: https://www.fashionnova.com/\n
@@ -134,7 +134,7 @@ let question = `Which URL data would you like to export?\n
 rl.question(question, (answer) => {
     switch (answer.toLowerCase()) {
         case '0':
-            exportAllData();
+            exportURLData('');
             break;
         case '1':
             exportURLData('https://www.forever21.com');

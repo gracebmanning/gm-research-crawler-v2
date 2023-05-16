@@ -47,6 +47,15 @@ export function validLinks(url:string, links:string[]):string[]{
                     valid.push(result);
                 }
             }
+            else if(new URL(l).hostname == 'www2.hm.com'){
+                // remove "-content-content-content" from fashion nova pages
+                if(result.indexOf('-content') != -1){
+                    result = result.substring(0, result.indexOf('-content'));
+                }
+                if(result.includes('/en_us/')){
+                    valid.push(result);
+                }
+            }
             else{
                 valid.push(result);
             }
