@@ -108,7 +108,7 @@ const client = createClient({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err:Error) => console.log('Redis Client Error', err));
 
 var seeds:Set<string> = new Set<string>;     // new Set(sites); use sites array from siteData.ts file
-var seed = 'https://www2.hm.com/en_us/index.html';    
+var seed = 'https://www.fashionbrandcompany.com';    
 seeds.add(seed); // just one seed URL right now
 
 var queue:Array<string> = new Array(); // links to visit next
