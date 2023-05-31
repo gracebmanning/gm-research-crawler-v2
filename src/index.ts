@@ -1,3 +1,4 @@
+import { HTTPResponse } from 'puppeteer';
 import { createClient } from 'redis';
 import { delay, validLinks, exactSimilarity, storeData, searchContent, getCategories, storeNumPages, isCollectionLink, storeTime } from './helpers';
 
@@ -19,6 +20,13 @@ async function main(url:string) {
         await page.setDefaultNavigationTimeout(0);
         await page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
         await delay(1000, 2000); // emulates human behavior
+
+        const statusCode = await page.waitForResponse((response:HTTPResponse) => {
+            return response.status();
+        });
+        if(statusCode == 404){
+            throw new Error('404 error');
+        }
         
         const links = await page.evaluate(() => {   
             // get links
@@ -108,7 +116,7 @@ const client = createClient({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err:Error) => console.log('Redis Client Error', err));
 
 var seeds:Set<string> = new Set<string>;     // new Set(sites); use sites array from siteData.ts file
-var seed = 'https://www.fashionbrandcompany.com';    
+var seed = 'https://chnge.com';    
 seeds.add(seed); // just one seed URL right now
 
 var queue:Array<string> = new Array(); // links to visit next

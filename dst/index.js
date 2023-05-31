@@ -28,6 +28,12 @@ function main(url) {
             yield page.setDefaultNavigationTimeout(0);
             yield page.goto(url, { waitUntil: 'networkidle2' }); // waits until page is fully loaded
             yield (0, helpers_1.delay)(1000, 2000); // emulates human behavior
+            const statusCode = yield page.waitForResponse((response) => {
+                return response.status();
+            });
+            if (statusCode == 404) {
+                throw new Error('404 error');
+            }
             const links = yield page.evaluate(() => {
                 // get links
                 const anchors = document.getElementsByTagName('a');
@@ -101,7 +107,7 @@ let run = () => __awaiter(void 0, void 0, void 0, function* () {
 const client = (0, redis_1.createClient)({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err) => console.log('Redis Client Error', err));
 var seeds = new Set; // new Set(sites); use sites array from siteData.ts file
-var seed = 'https://www.fashionbrandcompany.com';
+var seed = 'https://chnge.com';
 seeds.add(seed); // just one seed URL right now
 var queue = new Array(); // links to visit next
 var seen = new Set(); // unique seen links
