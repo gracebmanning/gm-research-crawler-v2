@@ -82,22 +82,8 @@ async function main(url:string) {
     }
 }
 
-let question = async()=>{
-    var seed:string = "";
-    await rl.question("URL: ", (answer) => {
-        rl.close();
-        seed = answer;
-        return;
-    });
-    return seed;
-}
 
 let run = async()=>{
-    // get user input for seed URL
-    const seed = await question();
-    var seeds:Set<string> = new Set<string>;    // new Set(sites); use sites array from siteData.ts fill  
-    seeds.add(seed); // just one seed URL right now
-
     await client.connect(); // connect to Redis server
     let start = new Date().getTime(); // start timer
     
@@ -131,10 +117,9 @@ let run = async()=>{
 const client = createClient({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err:Error) => console.log('Redis Client Error', err));
 
-let rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+var seeds:Set<string> = new Set<string>;    // new Set(sites); use sites array from siteData.ts fill
+var seed = "https://us.shein.com";
+seeds.add(seed); // just one seed URL right now
 
 var queue:Array<string> = new Array(); // links to visit next
 var seen:Set<string> = new Set(); // unique seen links
