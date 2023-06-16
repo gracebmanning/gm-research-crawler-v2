@@ -114,7 +114,7 @@ export function isCollectionLink(url:string):boolean{
         }
     }
     else if(urlObj.hostname == 'us.shein.com'){
-        // no pattern?
+        // no pattern
     }
     else if(urlObj.hostname == 'www2.hm.com'){
         // .../en_us/category/sub-category
