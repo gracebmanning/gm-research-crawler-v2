@@ -102,6 +102,13 @@ function main(url) {
     });
 }
 let run = () => __awaiter(void 0, void 0, void 0, function* () {
+    var seed = "";
+    rl.question("URL: ", (answer) => {
+        seed = answer;
+        rl.close();
+    });
+    var seeds = new Set; // new Set(sites); use sites array from siteData.ts fill  
+    seeds.add(seed); // just one seed URL right now
     yield client.connect(); // connect to Redis server
     let start = new Date().getTime(); // start timer
     for (const seedURL of seeds) {
@@ -134,12 +141,6 @@ let rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-var seed = "";
-rl.question("URL: ", (answer) => {
-    seed = answer;
-});
-var seeds = new Set; // new Set(sites); use sites array from siteData.ts fill  
-seeds.add(seed); // just one seed URL right now
 var queue = new Array(); // links to visit next
 var seen = new Set(); // unique seen links
 var shaKeys = new Set(); // SHA keys for exact similarity detection

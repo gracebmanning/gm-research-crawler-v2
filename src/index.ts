@@ -83,6 +83,15 @@ async function main(url:string) {
 }
 
 let run = async()=>{
+    // get user input for seed URL
+    var seed:string = "";
+    rl.question("URL: ", (answer) => {
+        seed = answer;
+        rl.close();
+    });
+    var seeds:Set<string> = new Set<string>;    // new Set(sites); use sites array from siteData.ts fill  
+    seeds.add(seed); // just one seed URL right now
+
     await client.connect(); // connect to Redis server
     let start = new Date().getTime(); // start timer
     
@@ -120,14 +129,6 @@ let rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-
-var seed:string = "";
-rl.question("URL: ", (answer) => {
-    seed = answer;
-});
-
-var seeds:Set<string> = new Set<string>;     // new Set(sites); use sites array from siteData.ts fill  
-seeds.add(seed); // just one seed URL right now
 
 var queue:Array<string> = new Array(); // links to visit next
 var seen:Set<string> = new Set(); // unique seen links
