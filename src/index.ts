@@ -82,13 +82,19 @@ async function main(url:string) {
     }
 }
 
+let question = async()=>{
+    var seed:string = "";
+    await rl.question("URL: ", (answer) => {
+        rl.close();
+        seed = answer;
+        return;
+    });
+    return seed;
+}
+
 let run = async()=>{
     // get user input for seed URL
-    var seed:string = "";
-    rl.question("URL: ", (answer) => {
-        seed = answer;
-        rl.close();
-    });
+    const seed = await question();
     var seeds:Set<string> = new Set<string>;    // new Set(sites); use sites array from siteData.ts fill  
     seeds.add(seed); // just one seed URL right now
 

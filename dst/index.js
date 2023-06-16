@@ -101,12 +101,18 @@ function main(url) {
         }
     });
 }
-let run = () => __awaiter(void 0, void 0, void 0, function* () {
+let question = () => __awaiter(void 0, void 0, void 0, function* () {
     var seed = "";
-    rl.question("URL: ", (answer) => {
-        seed = answer;
+    yield rl.question("URL: ", (answer) => {
         rl.close();
+        seed = answer;
+        return;
     });
+    return seed;
+});
+let run = () => __awaiter(void 0, void 0, void 0, function* () {
+    // get user input for seed URL
+    const seed = yield question();
     var seeds = new Set; // new Set(sites); use sites array from siteData.ts fill  
     seeds.add(seed); // just one seed URL right now
     yield client.connect(); // connect to Redis server
