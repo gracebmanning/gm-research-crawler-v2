@@ -9,7 +9,7 @@ export var abbreviations:Map<string, string> = new Map([
     ["https://www.fashionbrandcompany.com","FBC"],
     ["https://shoptunnelvision.com","TV"],
     ["https://igirlworld.com","IG"],
-    ["https://grace-manning.com","GM"],
+    ["https://grace-manning.com","GM"]
 ]);
 
 export var sites:string[] = [

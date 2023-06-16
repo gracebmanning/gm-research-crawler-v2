@@ -25,15 +25,17 @@ async function main(url:string) {
         const statusCode = await page.waitForResponse((response:HTTPResponse) => {
             return response.status();
         });
+        console.log(statusCode);
         if(statusCode == 404){
             throw new Error('404 error');
         }
         
-        const links = await page.evaluate(() => {   
+        const links:Array<string> = await page.evaluate(() => {   
             // get links
             const anchors = document.getElementsByTagName('a');
             return Array.from(anchors).map(a => a.href);
         });
+        console.log("links: ", links);
 
         // add URL to seen links
         seen.add(url);
@@ -52,6 +54,7 @@ async function main(url:string) {
                     seen.add(l);
                 }
             });
+            console.log("queue: ", queue);
     
             // cookies
             const cookies = await page.cookies();
@@ -118,7 +121,7 @@ const client = createClient({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err:Error) => console.log('Redis Client Error', err));
 
 var seeds:Set<string> = new Set<string>;    // new Set(sites); use sites array from siteData.ts fill
-var seed = "https://us.shein.com";
+var seed = "https://www.fashionnova.com";
 seeds.add(seed); // just one seed URL right now
 
 var queue:Array<string> = new Array(); // links to visit next
