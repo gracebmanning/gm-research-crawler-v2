@@ -110,7 +110,7 @@ let run = () => __awaiter(void 0, void 0, void 0, function* () {
 const client = (0, redis_1.createClient)({ url: "redis://127.0.0.1:6379" });
 client.on('error', (err) => console.log('Redis Client Error', err));
 var seeds = new Set; // new Set(sites); use sites array from siteData.ts fill
-var seed = "https://us.shein.com/SHEIN-BAE-Butterfly-Lace-Insert-Open-Back-Velvet-Bodycon-Dress-p-11983846-cat-1727.html?src_identifier=fc%3DWomen%60sc%3DDRESSES%60tc%3DSHOP%20BY%20LENGTH%60oc%3DShort%20Dresses%60ps%3Dtab01navbar06menu05dir01%60jc%3DitemPicking_00100608&src_module=topcat&src_tab_page_id=page_home1686887095623&mallCode=1";
+var seed = "https://www.fashionnova.com";
 seeds.add(seed); // just one seed URL right now
 var queue = new Array(); // links to visit next
 var seen = new Set(); // unique seen links

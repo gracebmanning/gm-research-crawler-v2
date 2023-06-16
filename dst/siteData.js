@@ -12,8 +12,7 @@ exports.abbreviations = new Map([
     ["https://www.fashionbrandcompany.com", "FBC"],
     ["https://shoptunnelvision.com", "TV"],
     ["https://igirlworld.com", "IG"],
-    ["https://grace-manning.com", "GM"],
-    ["https://us.shein.com/SHEIN-BAE-Butterfly-Lace-Insert-Open-Back-Velvet-Bodycon-Dress-p-11983846-cat-1727.html?src_identifier=fc%3DWomen%60sc%3DDRESSES%60tc%3DSHOP%20BY%20LENGTH%60oc%3DShort%20Dresses%60ps%3Dtab01navbar06menu05dir01%60jc%3DitemPicking_00100608&src_module=topcat&src_tab_page_id=page_home1686887095623&mallCode=1", "TEST"]
+    ["https://grace-manning.com", "GM"]
 ]);
 exports.sites = [
     'https://www.forever21.com',
