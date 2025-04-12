@@ -10,7 +10,7 @@
     ],
     "numcerts": "2",
     "categories": [],
-    "numcategories": "0",
+    "numcategories": "413",
     "numpages": "23044",
     "time": "38798.263",
     "notes": "stopped on AssertionError: rimraf missing path."

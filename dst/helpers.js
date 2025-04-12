@@ -58,7 +58,7 @@ function validLinks(url, links) {
                 }
             }
             else if (new URL(l).hostname == 'www2.hm.com') {
-                // remove "-content-content-content" from fashion nova pages
+                // remove "-content-content-content" from H&M pages
                 if (result.indexOf('-content') != -1) {
                     result = result.substring(0, result.indexOf('-content'));
                 }
